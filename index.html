@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ku">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akam Smart Menu - 5 Dishes</title>
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: radial-gradient(circle, #2c2c2c 0%, #000000 100%);
+            height: 100vh; display: flex; flex-direction: column;
+            align-items: center; font-family: 'Tahoma', sans-serif; overflow: hidden; color: white;
+        }
+        .header { position: absolute; top: 30px; text-align: center; z-index: 10; width: 100%; }
+        .header h1 { font-size: 24px; color: #ff6600; text-shadow: 0 0 15px rgba(255,102,0,0.5); }
+        #food-name { font-size: 20px; margin-top: 10px; background: rgba(255,255,255,0.1); padding: 5px 20px; border-radius: 20px; display: inline-block; }
+        
+        model-viewer { width: 100%; height: 100vh; --poster-color: transparent; }
+
+        .ar-button-container {
+            position: absolute; bottom: 50px; width: 100%;
+            display: flex; justify-content: center; z-index: 10;
+        }
+        .custom-ar-button {
+            background: #ff6600; border: none; padding: 15px 40px;
+            border-radius: 50px; color: white; font-size: 18px; font-weight: bold;
+            display: flex; align-items: center; gap: 10px; cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: 0.3s;
+        }
+        #default-ar-button { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Akam Smart Menu</h1>
+        <div id="food-name">بارکردنی خواردن...</div>
+    </div>
+
+    <model-viewer id="main-model" src="" ar ar-modes="webxr scene-viewer quick-look" camera-controls auto-rotate shadow-intensity="1.5" shadow-softness="1" exposure="1.2">
+        <div slot="ar-button" class="ar-button-container">
+            <button class="custom-ar-button">✨ پیشاندان لەسەر مێزەکەت</button>
+        </div>
+    </model-viewer>
+
+    <script>
+        // لیستی خواردنەکان و ناوی فایلەکانیان
+        const foods = {
+            'pizza': { name: '🍕 پیتزا', file: 'pizza.glb' },
+            'burger': { name: '🍔 بەرگر', file: 'burger.glb' },
+            'kebab': { name: '🍢 کەباب', file: 'kebab.glb' },
+            'rice': { name: '🍚 برنج', file: 'rice.glb' },
+            'stew': { name: '🥣 شلە', file: 'stew.glb' }
+        };
+
+        function loadFood() {
+            // سەیر دەکات بزانێت لە دوای # چ ناوێک نووسراوە لە لینکەکەدا
+            const hash = window.location.hash.replace('#', '').toLowerCase();
+            const food = foods[hash] || foods['pizza']; // ئەگەر هیچ نەبوو پیتزا پیشان بدە
+            
+            document.getElementById('food-name').innerText = food.name;
+            document.getElementById('main-model').src = food.file;
+        }
+
+        // کاتێک لینکەکە دەگۆڕێت، خواردنەکەش دەگۆڕێت
+        window.addEventListener('hashchange', loadFood);
+        window.onload = loadFood;
+    </script>
+
+</body>
+</html>
