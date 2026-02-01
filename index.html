@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akam Premium AR</title>
+    <title>Akam Premium AR Menu</title>
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body { 
             background: radial-gradient(circle, #1a1a1a 0%, #000000 100%);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
             height: 100vh;
             overflow: hidden;
             color: white;
         }
 
-        /* سندوقی ناونیشان و نرخ - ستایلی شوشەیی (Glassmorphism) */
+        /* سندوقی ناوی خواردن و نرخ */
         .info-card {
             position: absolute;
             top: 30px;
@@ -27,46 +28,46 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 30px;
+            border-radius: 25px;
             text-align: center;
             z-index: 10;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
 
         .food-name {
             font-size: 26px;
             font-weight: 800;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-            background: linear-gradient(to bottom, #fff, #bbb);
+            margin-bottom: 8px;
+            background: linear-gradient(to bottom, #ffffff, #aaaaaa);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .price-badge {
-            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%); /* ڕەنگێکی ڤی ئای پی */
+            display: inline-block;
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
             color: white;
-            padding: 6px 25px;
+            padding: 5px 25px;
             border-radius: 50px;
             font-size: 18px;
             font-weight: bold;
-            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
         }
 
-        /* ناوی تۆ وەک گەشەپێدەر لە خوارەوە */
+        /* ناوی تۆ وەک گەشەپێدەر */
         .developer-tag {
             position: absolute;
-            bottom: 110px;
+            bottom: 115px;
             width: 100%;
             text-align: center;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.4);
-            letter-spacing: 2px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 3px;
             text-transform: uppercase;
             z-index: 5;
+            font-weight: bold;
         }
 
-        /* دوگمەی بینین لەسەر مێز - دیزاینی تایبەت */
+        /* دوگمەی بینین لەسەر مێز */
         .ar-btn {
             position: absolute;
             bottom: 40px;
@@ -82,13 +83,10 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            box-shadow: 0 15px 40px rgba(255,255,255,0.2);
+            box-shadow: 0 10px 40px rgba(255,255,255,0.2);
             cursor: pointer;
             z-index: 10;
-            transition: 0.3s all ease;
         }
-
-        .ar-btn:active { transform: translateX(-50%) scale(0.95); }
 
         model-viewer {
             width: 100%;
@@ -100,7 +98,7 @@
 <body>
 
     <div class="info-card">
-        <div id="food-name" class="food-name">LOADING...</div>
+        <div id="food-name" class="food-name">باردەکرێت...</div>
         <div id="food-price" class="price-badge">---</div>
     </div>
 
@@ -111,6 +109,7 @@
         ar 
         ar-modes="webxr scene-viewer quick-look" 
         ar-placement="floor"
+        ar-scale="fixed"
         camera-controls 
         shadow-intensity="2" 
         shadow-softness="0.5"
@@ -119,15 +118,19 @@
         auto-rotate>
         
         <button slot="ar-button" class="ar-btn">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                <circle cx="12" cy="13" r="4"></circle>
+            </svg>
             بینین لەسەر مێزەکەت
         </button>
     </model-viewer>
 
     <script>
+        // لیستی تەواوی خواردنەکان
         const foods = {
             'pizza': { 
-                name: 'پیتزای ئیتالی تایبەت', 
+                name: 'پیتزای ئیتالی', 
                 price: '12,500 د.ک', 
                 file: 'pizza.glb' 
             },
@@ -148,23 +151,17 @@
             }
         };
 
-        function init() {
+        function initMenu() {
             const hash = window.location.hash.replace('#', '').toLowerCase();
             const food = foods[hash] || foods['pizza'];
+            
             document.getElementById('food-name').innerText = food.name;
             document.getElementById('food-price').innerText = food.price;
             document.getElementById('akam-model').src = food.file;
         }
 
-        const modelViewer = document.querySelector("#akam-model");
-        modelViewer.addEventListener("ar-status", (event) => {
-            if (event.detail.status === "session-started") {
-                modelViewer.setAttribute("disable-zoom", "");
-            }
-        });
-
-        window.addEventListener('hashchange', init);
-        window.onload = init;
+        window.addEventListener('hashchange', initMenu);
+        window.onload = initMenu;
     </script>
 </body>
 </html>
