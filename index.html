@@ -1,46 +1,90 @@
 <!DOCTYPE html>
-<html lang="ku">
+<html lang="ku" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akam Smart Menu - AR</title>
+    <title>Akam Luxury Menu</title>
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: radial-gradient(circle, #2c2c2c 0%, #000000 100%); height: 100vh; overflow: hidden; font-family: 'Tahoma', sans-serif; }
-        .header { position: absolute; top: 20px; text-align: center; width: 100%; z-index: 10; color: white; }
-        .header h1 { color: #ff6600; font-size: 22px; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        body { 
+            background: #0f0f0f; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white; 
+            height: 100vh;
+            overflow: hidden;
+        }
         
-        model-viewer { width: 100%; height: 100vh; background-color: transparent; }
+        model-viewer {
+            width: 100%;
+            height: 100vh;
+            --poster-color: transparent;
+        }
 
-        /* ستایلی دوگمەی AR کە بە زۆر نیشانی دەدات */
-        .ar-btn {
-            display: block !important;
-            visibility: visible !important;
+        /* سندوقی ناونیشان و نرخ بە ستایلی شووشەیی */
+        .info-card {
+            position: absolute;
+            top: 40px;
+            right: 20px;
+            left: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .food-name {
+            font-size: 26px;
+            font-weight: bold;
+            color: #ffffff;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .price-badge {
+            display: inline-block;
+            background: #ff6600;
+            color: white;
+            padding: 5px 20px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(255, 102, 0, 0.3);
+        }
+
+        /* دوگمەی AR لە خوارەوە */
+        .ar-float-btn {
             position: absolute;
             bottom: 40px;
             left: 50%;
             transform: translateX(-50%);
-            background: #ff6600;
-            color: white;
+            background: white;
+            color: black;
             border: none;
-            padding: 15px 30px;
+            padding: 16px 35px;
             border-radius: 50px;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: bold;
-            z-index: 9999;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             cursor: pointer;
-            white-space: nowrap;
+            z-index: 10;
         }
+
         #default-ar-button { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>Akam Smart Menu</h1>
-        <div id="food-label" style="background: rgba(255,255,255,0.1); display: inline-block; padding: 5px 15px; border-radius: 15px; margin-top: 5px;">بارکردنی خواردن...</div>
+    <div class="info-card">
+        <div id="food-name" class="food-name">بارکردن...</div>
+        <div id="food-price" class="price-badge">0,000 د.ک</div>
     </div>
 
     <model-viewer id="akam-model" 
@@ -49,36 +93,35 @@
         ar-modes="webxr scene-viewer quick-look" 
         camera-controls 
         auto-rotate 
-        shadow-intensity="2" 
-        exposure="1.2"
-        loading="eager">
+        shadow-intensity="1.5" 
+        exposure="1.2">
         
-        <button slot="ar-button" class="ar-btn">
-            ✨ بینین لەسەر مێزەکەت
+        <button slot="ar-button" class="ar-float-btn" onclick="this.parentElement.activateAR()">
+            <img src="https://cdn-icons-png.flaticon.com/512/2107/2107952.png" width="20">
+            پیشاندان لەسەر مێزەکەت
         </button>
-
     </model-viewer>
 
     <script>
         const foods = {
-            'pizza': { name: '🍕 پیتزا', file: 'pizza.glb' },
-            'burger': { name: '🍔 بەرگر', file: 'burger.glb' },
-            'kebab': { name: '🍢 کەباب', file: 'kebab.glb' },
-            'rice': { name: '🍚 برنج', file: 'rice.glb' },
-            'stew': { name: '🥣 شلە', file: 'stew.glb' }
+            'pizza': { name: 'پیتزای مەرگریتا', price: '12,000 د.ک', file: 'pizza.glb' },
+            'burger': { name: 'بەرگری دۆبڵ چیز', price: '8,500 د.ک', file: 'burger.glb' },
+            'kebab': { name: 'کەبابی گۆشتی فرێش', price: '10,000 د.ک', file: 'kebab.glb' },
+            'rice': { name: 'برنج و شلە', price: '7,000 د.ک', file: 'rice.glb' },
+            'stew': { name: 'شڵەی تایبەت', price: '3,000 د.ک', file: 'stew.glb' }
         };
 
-        function init() {
+        function updateMenu() {
             const hash = window.location.hash.replace('#', '').toLowerCase();
             const food = foods[hash] || foods['pizza'];
-            const model = document.getElementById('akam-model');
             
-            document.getElementById('food-label').innerText = food.name;
-            model.src = food.file;
+            document.getElementById('food-name').innerText = food.name;
+            document.getElementById('food-price').innerText = food.price;
+            document.getElementById('akam-model').src = food.file;
         }
 
-        window.addEventListener('hashchange', init);
-        window.onload = init;
+        window.addEventListener('hashchange', updateMenu);
+        window.onload = updateMenu;
     </script>
 </body>
 </html>
