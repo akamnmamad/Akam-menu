@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akam Luxury AR Menu</title>
+    <title>Akam Premium AR Menu</title>
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            background: #0a0a0a; 
-            font-family: 'Tahoma', Geneva, Verdana, sans-serif;
-            color: white; 
+            background: #000; 
+            font-family: 'Tahoma', sans-serif;
             height: 100vh;
             overflow: hidden;
         }
@@ -21,71 +20,46 @@
             --poster-color: transparent;
         }
 
-        /* سندوقی ناونیشان و نرخ - ستایلی لوکس */
+        /* سندوقی نرخ و ناو */
         .info-card {
             position: absolute;
-            top: 30px;
+            top: 20px;
             right: 20px;
             left: 20px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 25px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
             text-align: center;
             z-index: 10;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
 
-        .food-name {
-            font-size: 24px;
-            font-weight: bold;
-            color: #ffffff;
-            margin-bottom: 8px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
+        .food-name { color: white; font-size: 20px; font-weight: bold; margin-bottom: 5px; }
+        .price-badge { background: #ff6600; color: white; padding: 3px 15px; border-radius: 50px; font-size: 15px; }
 
-        .price-badge {
-            display: inline-block;
-            background: linear-gradient(45deg, #ff6600, #ff9900);
-            color: white;
-            padding: 6px 25px;
-            border-radius: 50px;
-            font-size: 18px;
-            font-weight: bold;
-            box-shadow: 0 5px 15px rgba(255, 102, 0, 0.4);
-        }
-
-        /* دوگمەی AR جێگیر لە خوارەوە */
-        .ar-float-btn {
+        /* دوگمەی AR */
+        .ar-btn {
             position: absolute;
-            bottom: 40px;
+            bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            background: #ffffff;
-            color: #000000;
+            background: #fff;
+            color: #000;
             border: none;
-            padding: 18px 40px;
+            padding: 15px 30px;
             border-radius: 50px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
             z-index: 10;
-            transition: 0.3s;
         }
-
-        #default-ar-button { display: none; }
     </style>
 </head>
 <body>
 
     <div class="info-card">
-        <div id="food-name" class="food-name">بارکردنی مێنۆ...</div>
+        <div id="food-name" class="food-name">باردەکرێت...</div>
         <div id="food-price" class="price-badge">0,000 د.ک</div>
     </div>
 
@@ -93,42 +67,44 @@
         src="" 
         ar 
         ar-modes="webxr scene-viewer quick-look" 
-        ar-scale="fixed" 
+        ar-placement="floor"
         camera-controls 
-        auto-rotate 
-        shadow-intensity="2" 
+        shadow-intensity="1.5" 
         shadow-softness="1"
         exposure="1.2"
-        environment-image="neutral">
+        environment-image="neutral"
+        auto-rotate>
         
-        <button slot="ar-button" class="ar-float-btn" onclick="this.parentElement.activateAR()">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path><circle cx="12" cy="12" r="3"></circle></svg>
-            بینین لەسەر مێزەکەت
+        <button slot="ar-button" class="ar-btn" onclick="this.parentElement.activateAR()">
+            📷 بینین لەسەر مێزەکەت
         </button>
     </model-viewer>
 
     <script>
         const foods = {
-            'pizza': { name: 'پیتزای مەرگریتا', price: '12,000 د.ک', file: 'pizza.glb' },
-            'burger': { name: 'بەرگری دۆبڵ چیز', price: '8,500 د.ک', file: 'burger.glb' },
-            'kebab': { name: 'کەبابی گۆشتی فرێش', price: '10,500 د.ک', file: 'kebab.glb' },
-            'rice': { name: 'برنج و شلەی کوردی', price: '7,000 د.ک', file: 'rice.glb' },
-            'stew': { name: 'شڵەی تایبەت', price: '3,500 د.ک', file: 'stew.glb' }
+            'pizza': { name: 'پیتزای ئیتالی', price: '12,000 د.ک', file: 'pizza.glb' },
+            'burger': { name: 'بەرگری دۆبڵ', price: '8,500 د.ک', file: 'burger.glb' }
         };
 
-        function updateMenu() {
+        function init() {
             const hash = window.location.hash.replace('#', '').toLowerCase();
             const food = foods[hash] || foods['pizza'];
-            
             document.getElementById('food-name').innerText = food.name;
             document.getElementById('food-price').innerText = food.price;
-            
-            const model = document.getElementById('akam-model');
-            model.src = food.file;
+            document.getElementById('akam-model').src = food.file;
         }
 
-        window.addEventListener('hashchange', updateMenu);
-        window.onload = updateMenu;
+        // قفڵکردنی قەبارە لە کاتی AR بۆ ئەوەی تێک نەچێت
+        const modelViewer = document.querySelector("#akam-model");
+        modelViewer.addEventListener("ar-status", (event) => {
+            if (event.detail.status === "session-started") {
+                // کاتێک لە ناو کامێرایە، ناهێڵێت کڕیار بە دوو پەنجە گەورەی بکات
+                modelViewer.setAttribute("disable-zoom", "");
+            }
+        });
+
+        window.addEventListener('hashchange', init);
+        window.onload = init;
     </script>
 </body>
 </html>
