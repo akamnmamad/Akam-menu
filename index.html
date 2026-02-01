@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akam Premium AR Menu</title>
+    <title>Akam Smart Menu AR</title>
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     
     <style>
@@ -17,43 +17,73 @@
             color: white;
         }
 
-        /* سندوقی ناوی خواردن و نرخ */
-        .info-card {
+        /* ستایلی لۆگۆی AKAM SMART MENU */
+        .header-container {
             position: absolute;
-            top: 30px;
-            right: 20px;
-            left: 20px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 25px;
-            text-align: center;
+            top: 25px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             z-index: 10;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            gap: 15px;
+        }
+
+        .brand-logo {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            padding: 10px 25px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffd700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .logo-text small {
+            font-size: 10px;
+            color: #fff;
+            display: block;
+            letter-spacing: 3px;
+            margin-top: -2px;
+        }
+
+        /* کارتی نرخ و زانیاری */
+        .info-card {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(15px);
+            padding: 15px 35px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            min-width: 250px;
         }
 
         .food-name {
-            font-size: 26px;
-            font-weight: 800;
+            font-size: 24px;
+            font-weight: bold;
             margin-bottom: 8px;
-            background: linear-gradient(to bottom, #ffffff, #aaaaaa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #ffffff;
         }
 
         .price-badge {
             display: inline-block;
             background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
             color: white;
-            padding: 5px 25px;
+            padding: 5px 20px;
             border-radius: 50px;
             font-size: 18px;
             font-weight: bold;
         }
 
-        /* ناوی تۆ وەک گەشەپێدەر */
+        /* ناوی گەشەپێدەر (AKAM) */
         .developer-tag {
             position: absolute;
             bottom: 115px;
@@ -62,12 +92,10 @@
             font-size: 11px;
             color: rgba(255, 255, 255, 0.3);
             letter-spacing: 3px;
-            text-transform: uppercase;
-            z-index: 5;
             font-weight: bold;
         }
 
-        /* دوگمەی بینین لەسەر مێز */
+        /* دوگمەی AR */
         .ar-btn {
             position: absolute;
             bottom: 40px;
@@ -76,33 +104,36 @@
             background: #ffffff;
             color: #000000;
             border: none;
-            padding: 18px 45px;
+            padding: 18px 40px;
             border-radius: 100px;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 900;
             display: flex;
             align-items: center;
-            gap: 12px;
-            box-shadow: 0 10px 40px rgba(255,255,255,0.2);
-            cursor: pointer;
+            gap: 10px;
+            box-shadow: 0 15px 40px rgba(255,255,255,0.2);
             z-index: 10;
         }
 
         model-viewer {
             width: 100%;
             height: 100vh;
-            --poster-color: transparent;
         }
     </style>
 </head>
 <body>
 
-    <div class="info-card">
-        <div id="food-name" class="food-name">باردەکرێت...</div>
-        <div id="food-price" class="price-badge">---</div>
+    <div class="header-container">
+        <div class="brand-logo">
+            <span class="logo-text">AKAM <small>SMART MENU</small></span>
+        </div>
+        <div class="info-card">
+            <div id="food-name" class="food-name">باردەکرێت...</div>
+            <div id="food-price" class="price-badge">---</div>
+        </div>
     </div>
 
-    <div class="developer-tag">Designed & Developed by AKAM</div>
+    <div class="developer-tag">DESIGNED & DEVELOPED BY AKAM</div>
 
     <model-viewer id="akam-model" 
         src="" 
@@ -113,12 +144,12 @@
         camera-controls 
         shadow-intensity="2" 
         shadow-softness="0.5"
-        exposure="1.2"
+        exposure="1.3"
         environment-image="neutral"
         auto-rotate>
         
         <button slot="ar-button" class="ar-btn">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
                 <circle cx="12" cy="13" r="4"></circle>
             </svg>
@@ -127,27 +158,17 @@
     </model-viewer>
 
     <script>
-        // لیستی تەواوی خواردنەکان
+        // لینکەکان ڕاستەوخۆ بەستراون بە سێرڤەری گووگڵەوە بۆ ئەوەی لەکار نەکەون
         const foods = {
             'pizza': { 
-                name: 'پیتزای ئیتالی', 
+                name: 'پیتزای ئیتالی تایبەت', 
                 price: '12,500 د.ک', 
-                file: 'pizza.glb' 
-            },
-            'burger': { 
-                name: 'بەرگری دۆبڵ چیز', 
-                price: '9,500 د.ک', 
-                file: 'burger.glb' 
+                file: 'https://modelviewer.dev/shared-assets/models/glTFSampleModels/FoodPizza/glTF-Binary/FoodPizza.glb' 
             },
             'kebab': { 
                 name: 'کەبابی گۆشتی فرێش', 
                 price: '10,000 د.ک', 
-                file: 'kebab.glb' 
-            },
-            'rice': { 
-                name: 'برنج و شلەی کوردی', 
-                price: '7,500 د.ک', 
-                file: 'rice.glb' 
+                file: 'https://modelviewer.dev/shared-assets/models/glTFSampleModels/FoodKebab/glTF-Binary/FoodKebab.glb' 
             }
         };
 
@@ -159,6 +180,14 @@
             document.getElementById('food-price').innerText = food.price;
             document.getElementById('akam-model').src = food.file;
         }
+
+        // قفڵکردنی زووم لە کاتی AR
+        const modelViewer = document.querySelector("#akam-model");
+        modelViewer.addEventListener("ar-status", (event) => {
+            if (event.detail.status === "session-started") {
+                modelViewer.setAttribute("disable-zoom", "");
+            }
+        });
 
         window.addEventListener('hashchange', initMenu);
         window.onload = initMenu;
