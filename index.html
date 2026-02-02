@@ -17,7 +17,6 @@
             color: white;
         }
 
-        /* سندوقی ناوی خواردن و نرخ */
         .info-card {
             position: absolute;
             top: 30px;
@@ -31,16 +30,13 @@
             border-radius: 25px;
             text-align: center;
             z-index: 10;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
 
         .food-name {
             font-size: 26px;
             font-weight: 800;
             margin-bottom: 8px;
-            background: linear-gradient(to bottom, #ffffff, #aaaaaa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #ffffff;
         }
 
         .price-badge {
@@ -51,18 +47,6 @@
             border-radius: 50px;
             font-size: 18px;
             font-weight: bold;
-        }
-
-        .developer-tag {
-            position: absolute;
-            bottom: 115px;
-            width: 100%;
-            text-align: center;
-            font-size: 10px;
-            color: rgba(255, 255, 255, 0.3);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            z-index: 5;
         }
 
         .ar-btn {
@@ -80,10 +64,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            box-shadow: 0 10px 40px rgba(255,255,255,0.2);
-            cursor: pointer;
             z-index: 10;
-            white-space: nowrap;
         }
 
         model-viewer {
@@ -100,47 +81,28 @@
         <div id="food-price" class="price-badge">---</div>
     </div>
 
-    <div class="developer-tag">Designed & Developed by AKAM</div>
-
     <model-viewer id="akam-model" 
         src="" 
         ar 
         ar-modes="webxr scene-viewer quick-look" 
         ar-placement="floor"
-        ar-scale="fixed"  camera-controls 
-        disable-zoom      shadow-intensity="2" 
-        shadow-softness="0.5"
+        ar-scale="fixed" 
+        camera-controls 
+        disable-zoom
+        shadow-intensity="2" 
         exposure="1.2"
         environment-image="neutral"
         auto-rotate
-        rotation-speed="20deg"
-        interpolation-decay="200"
-        scale="0.05 0.05 0.05"> <button slot="ar-button" class="ar-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                <circle cx="12" cy="13" r="4"></circle>
-            </svg>
-            بینین لەسەر مێزەکەت
+        scale="0.005 0.005 0.005"> <button slot="ar-button" class="ar-btn">
+            بینین لەسەر مێزەکەت (AR)
         </button>
     </model-viewer>
 
     <script>
         const foods = {
-            'pizza': { 
-                name: 'پیتزای ئیتالی', 
-                price: '٦,٥٠٠ د.ک', 
-                file: 'pizza.glb' // لێرە ناوی فایلەکەت چاک بکە بەپێی گیتھەب
-            },
-            'burger': { 
-                name: 'بەرگری دەبڵ چیز', 
-                price: '٥,٥٠٠ د.ک', 
-                file: 'burger.glb' 
-            },
-            'kebab': { 
-                name: 'کەبابی گۆشتی فرێش', 
-                price: '٥,٠٠٠ د.ک', 
-                file: 'kebab.glb' 
-            }
+            'pizza': { name: 'پیتزای ئیتالی', price: '١٢,٥٠٠ د.ک', file: 'food1.glb' },
+            'burger': { name: 'بەرگری دۆبڵ چیز', price: '٩,٥٠٠ د.ک', file: 'burger.glb' },
+            'kebab': { name: 'کەبابی گۆشتی فرێش', price: '١٠,٠٠٠ د.ک', file: 'kebab.glb' }
         };
 
         function initMenu() {
@@ -149,9 +111,7 @@
             
             document.getElementById('food-name').innerText = food.name;
             document.getElementById('food-price').innerText = food.price;
-            
-            const modelViewer = document.getElementById('akam-model');
-            modelViewer.src = food.file;
+            document.getElementById('akam-model').src = food.file;
         }
 
         window.addEventListener('hashchange', initMenu);
