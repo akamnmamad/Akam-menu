@@ -3,125 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akam Smart Menu | مێنۆی زیرەک</title>
-    
+    <title>Akam Premium AR Menu</title>
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-
+    
     <style>
-        body {
-            margin: 0;
-            background-color: #1a1a1a;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background: radial-gradient(circle, #1a1a1a 0%, #000000 100%);
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            height: 100vh;
             overflow: hidden;
-        }
-
-        /* ستایلی کارتی زانیاری خواردنەکە */
-        .info-panel {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
-            padding: 15px 25px;
-            border-radius: 20px;
-            border: 1px solid #ffd700;
-            text-align: center;
-            min-width: 200px;
             color: white;
         }
 
-        .food-title { font-size: 22px; font-weight: bold; color: #ffd700; margin-bottom: 5px; }
-        .food-price { font-size: 18px; opacity: 0.9; }
+        /* سندوقی ناوی خواردن و نرخ */
+        .info-card {
+            position: absolute;
+            top: 30px;
+            right: 20px;
+            left: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            text-align: center;
+            z-index: 10;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
 
-        /* مۆدێل ڤیوەر - هەموو شاشەکە دەگرێتەوە */
+        .food-name {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(to bottom, #ffffff, #aaaaaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .price-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 5px 25px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .developer-tag {
+            position: absolute;
+            bottom: 115px;
+            width: 100%;
+            text-align: center;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            z-index: 5;
+        }
+
+        .ar-btn {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 100px;
+            font-size: 16px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 40px rgba(255,255,255,0.2);
+            cursor: pointer;
+            z-index: 10;
+            white-space: nowrap;
+        }
+
         model-viewer {
             width: 100%;
             height: 100vh;
             --poster-color: transparent;
         }
-
-        /* دوگمەی AR کە لە مۆبایل دەردەکەوێت */
-        #ar-button {
-            background-color: #ffd700;
-            border-radius: 30px;
-            padding: 12px 24px;
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            border: none;
-            font-weight: bold;
-            font-size: 16px;
-            box-shadow: 0px 4px 15px rgba(0,0,0,0.4);
-            cursor: pointer;
-        }
-
-        /* پەیامی ڕێنمایی بۆ بەکارهێنەر */
-        .instruction {
-            position: absolute;
-            bottom: 100px;
-            width: 100%;
-            text-align: center;
-            color: rgba(255,255,255,0.7);
-            font-size: 14px;
-            pointer-events: none;
-        }
     </style>
 </head>
 <body>
 
-    <div class="info-panel">
-        <div id="title" class="food-title">باردەکرێت...</div>
-        <div id="price" class="food-price">تکایە چاوەڕێ بکە</div>
+    <div class="info-card">
+        <div id="food-name" class="food-name">باردەکرێت...</div>
+        <div id="food-price" class="price-badge">---</div>
     </div>
 
-    <model-viewer 
-        id="akam-model"
-        src="food1.glb" 
+    <div class="developer-tag">Designed & Developed by AKAM</div>
+
+    <model-viewer id="akam-model" 
+        src="" 
         ar 
         ar-modes="webxr scene-viewer quick-look" 
-        camera-controls 
-        auto-rotate
-        shadow-intensity="1.5"
-        shadow-softness="1"
-        exposure="1.2"
         ar-placement="floor"
-        scale="0.05 0.05 0.05"> <button slot="ar-button" id="ar-button">
-            📸 خواردنەکە بخەرە سەر مێزەکە
+        camera-controls 
+        shadow-intensity="2" 
+        shadow-softness="0.5"
+        exposure="1.2"
+        environment-image="neutral"
+        auto-rotate
+        rotation-speed="20deg"
+        interpolation-decay="200"
+        scale="0.01 0.01 0.01"> <button slot="ar-button" class="ar-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                <circle cx="12" cy="13" r="4"></circle>
+            </svg>
+            بینین لەسەر مێزەکەت
         </button>
-        
-        <div class="instruction">مۆبایلەکە کەمێک بجوڵێنە بۆ دۆزینەوەی مێزەکە</div>
     </model-viewer>
 
     <script>
-        // داتای مێنۆکە - لێرە خواردنەکان زیاد بکە
-        const menu = {
-            'kebab': {
-                title: 'کەبابی تایبەت',
-                price: '٣,٥٠٠ دینار',
-                file: 'burger.glb'
+        const foods = {
+            'pizza': { 
+                name: 'پیتزای ئیتالی', 
+                price: '٦,٥٠٠ د.ک', 
+                file: 'pizza.glb' // لێرە ناوی فایلەکەت چاک بکە بەپێی گیتھەب
             },
-            'pizza': {
-                title: 'پیتزای مێکسیکانۆ',
-                price: '٥,٠٠٠ دینار',
-                file: 'pizza.glb'
+            'burger': { 
+                name: 'بەرگری دەبڵ چیز', 
+                price: '٥,٥٠٠ د.ک', 
+                file: 'burger.glb' 
+            },
+            'kebab': { 
+                name: 'کەبابی گۆشتی فرێش', 
+                price: '٥,٠٠٠ د.ک', 
+                file: 'kebab.glb' 
             }
         };
 
-        // فەرمان بۆ گۆڕینی مۆدێل بەپێی جۆری خواردنەکە لە لینکەکەدا
-        function updateMenu() {
-            const hash = window.location.hash.substring(1) || 'kebab';
-            const item = menu[hash] || menu['kebab'];
-
-            document.getElementById('title').innerText = item.title;
-            document.getElementById('price').innerText = item.price;
-            document.getElementById('akam-model').src = item.file;
+        function initMenu() {
+            const hash = window.location.hash.replace('#', '').toLowerCase();
+            const food = foods[hash] || foods['pizza'];
+            
+            document.getElementById('food-name').innerText = food.name;
+            document.getElementById('food-price').innerText = food.price;
+            
+            const modelViewer = document.getElementById('akam-model');
+            modelViewer.src = food.file;
         }
 
-        window.addEventListener('hashchange', updateMenu);
-        window.addEventListener('load', updateMenu);
+        window.addEventListener('hashchange', initMenu);
+        window.onload = initMenu;
     </script>
 </body>
 </html>
