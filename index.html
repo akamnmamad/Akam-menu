@@ -126,28 +126,32 @@
         </button>
     </model-viewer>
 
-    <script>
-        // لیستی تەواوی خواردنەکان
+        <script>
+        // لیستی تەواوی خواردنەکان لەگەڵ دیاریکردنی قەبارە (Scale)
         const foods = {
             'pizza': { 
                 name: 'پیتزای ئیتالی', 
                 price: '12,500 د.ک', 
-                file: 'pizza.glb' 
+                file: 'pizza.glb',
+                scale: '0.5 0.5 0.5' // ئەگەر گەورە بوو، ئەم ژمارانە کەم بکەرەوە (بۆ نموونە 0.3)
             },
             'burger': { 
                 name: 'بەرگری دۆبڵ چیز', 
                 price: '9,500 د.ک', 
-                file: 'burger.glb' 
+                file: 'burger.glb',
+                scale: '0.4 0.4 0.4' 
             },
             'kebab': { 
                 name: 'کەبابی گۆشتی فرێش', 
-                price: '10,000 د.ک', 
-                file: 'kebab.glb' 
+                price: '70,000 د.ک', 
+                file: 'kebab.glb',
+                scale: '0.5 0.5 0.5' 
             },
             'rice': { 
                 name: 'برنج و شلەی کوردی', 
                 price: '7,500 د.ک', 
-                file: 'rice.glb' 
+                file: 'rice.glb',
+                scale: '0.5 0.5 0.5' 
             }
         };
 
@@ -155,16 +159,20 @@
             const hash = window.location.hash.replace('#', '').toLowerCase();
             const food = foods[hash] || foods['pizza'];
             
+            const modelViewer = document.getElementById('akam-model');
+            
             document.getElementById('food-name').innerText = food.name;
             document.getElementById('food-price').innerText = food.price;
-            document.getElementById('akam-model').src = food.file;
+            
+            modelViewer.src = food.file;
+            
+            // ئەم بەشە قەبارەکە ڕێکدەخات بۆ ئەوەی زۆر گەورە نەبێت
+            modelViewer.setAttribute('scale', food.scale);
         }
 
         window.addEventListener('hashchange', initMenu);
         window.onload = initMenu;
     </script>
-</body>
-</html>
 
 
 
