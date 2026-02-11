@@ -3,89 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akam Premium AR Menu</title>
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <title>Akam Smart Menu (ASM)</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body { 
-            background: radial-gradient(circle, #1a1a1a 0%, #000000 100%);
+            background: radial-gradient(circle at center, #2a2a2a 0%, #000000 100%);
             font-family: 'Segoe UI', Tahoma, sans-serif;
             height: 100vh;
             overflow: hidden;
             color: white;
         }
 
-        /* سندوقی ناوی خواردن و نرخ */
+        /* لۆگۆی ASM لە سەرەوە */
+        .brand-logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-weight: 900;
+            color: #ff9f43; /* ڕەنگی پرتەقاڵی */
+            font-size: 18px;
+            z-index: 20;
+            letter-spacing: 1px;
+        }
+
         .info-card {
             position: absolute;
-            top: 30px;
+            top: 60px; /* کەمێک هاتە خوارەوە */
             right: 20px;
             left: 20px;
             padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1); /* شەفافتر */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
             text-align: center;
             z-index: 10;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
         .food-name {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 800;
-            margin-bottom: 8px;
-            background: linear-gradient(to bottom, #ffffff, #aaaaaa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
         .price-badge {
             display: inline-block;
-            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            padding: 5px 25px;
+            background: #ff9f43;
+            color: #000;
+            padding: 5px 20px;
             border-radius: 50px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 159, 67, 0.4);
         }
 
-        /* ناوی تۆ وەک گەشەپێدەر */
         .developer-tag {
             position: absolute;
-            bottom: 115px;
+            bottom: 20px;
             width: 100%;
             text-align: center;
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.3);
-            letter-spacing: 3px;
-            text-transform: uppercase;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 2px;
             z-index: 5;
-            font-weight: bold;
         }
 
-        /* دوگمەی بینین لەسەر مێز */
         .ar-btn {
             position: absolute;
-            bottom: 40px;
+            bottom: 50px;
             left: 50%;
             transform: translateX(-50%);
-            background: #ffffff;
-            color: #000000;
+            background: white;
+            color: black;
             border: none;
-            padding: 18px 45px;
-            border-radius: 100px;
-            font-size: 18px;
-            font-weight: 900;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
             display: flex;
             align-items: center;
-            gap: 12px;
-            box-shadow: 0 10px 40px rgba(255,255,255,0.2);
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(255,255,255,0.3);
             cursor: pointer;
             z-index: 10;
+            transition: transform 0.2s;
+        }
+        
+        .ar-btn:active {
+            transform: translateX(-50%) scale(0.95);
         }
 
         model-viewer {
@@ -93,87 +105,136 @@
             height: 100vh;
             --poster-color: transparent;
         }
+
+        /* ستایلی هێڵی بارکردن (Loading Bar) */
+        .progress-bar {
+            display: block;
+            width: 33%;
+            height: 10%;
+            max-height: 2%;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate3d(-50%, -50%, 0);
+            border-radius: 25px;
+            box-shadow: 0px 3px 10px 3px rgba(0, 0, 0, 0.5), 0px 0px 5px 1px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 15;
+        }
+    
+        .progress-bar.hide {
+            visibility: hidden;
+            transition: visibility 0.3s;
+        }
+    
+        .update-bar {
+            background-color: #ff9f43; /* پرتەقاڵی */
+            width: 0%;
+            height: 100%;
+            border-radius: 25px;
+            float: left;
+            transition: width 0.3s;
+        }
+
     </style>
 </head>
 <body>
 
+    <div class="brand-logo">ASM 🧊</div>
+
     <div class="info-card">
-        <div id="food-name" class="food-name">باردەکرێت...</div>
+        <div id="food-name" class="food-name">...</div>
         <div id="food-price" class="price-badge">---</div>
     </div>
 
-    <div class="developer-tag">Designed & Developed by AKAM</div>
+    <div class="developer-tag">POWERED BY AKAM SMART MENU</div>
 
     <model-viewer id="akam-model" 
         src="" 
+        poster="loading.jpg" 
         ar 
         ar-modes="webxr scene-viewer quick-look" 
         ar-placement="floor"
         ar-scale="fixed"
         camera-controls 
-        shadow-intensity="2" 
-        shadow-softness="0.5"
-        exposure="1.2"
+        shadow-intensity="1.5" 
+        shadow-softness="1"
+        exposure="1"
         environment-image="neutral"
-        auto-rotate>
+        auto-rotate
+        rotation-per-second="30deg">
         
         <button slot="ar-button" class="ar-btn">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
                 <circle cx="12" cy="13" r="4"></circle>
             </svg>
-            بینین لەسەر مێزەکەت
+            بینین لەسەر مێز
         </button>
+
+        <div class="progress-bar" slot="progress-bar">
+            <div class="update-bar"></div>
+        </div>
+
     </model-viewer>
 
-        <script>
-        // لیستی تەواوی خواردنەکان لەگەڵ دیاریکردنی قەبارە (Scale)
+    <script>
+        // داتای خواردنەکان
         const foods = {
             'pizza': { 
-                name: 'پیتزای ئیتالی', 
+                name: 'پیتزای ئیتاڵی', 
                 price: '12,500 د.ک', 
                 file: 'pizza.glb',
-                scale: '0.5 0.5 0.5' // ئەگەر گەورە بوو، ئەم ژمارانە کەم بکەرەوە (بۆ نموونە 0.3)
+                scale: '0.5 0.5 0.5' 
             },
             'burger': { 
-                name: 'بەرگری دۆبڵ چیز', 
+                name: 'بەرگری دۆبڵ', 
                 price: '9,500 د.ک', 
                 file: 'burger.glb',
                 scale: '0.4 0.4 0.4' 
             },
-            'kebab': { 
-                name: 'کەبابی گۆشتی فرێش', 
-                price: '70,000 د.ک', 
-                file: 'kebab.glb',
-                scale: '0.5 0.5 0.5' 
-            },
-            'rice': { 
-                name: 'برنج و شلەی کوردی', 
-                price: '7,500 د.ک', 
-                file: 'rice.glb',
+            // ئەگەر لینکی هەڵە هات، ئەمە دەبێتە دیفۆڵت
+            'default': { 
+                name: 'بەخێربێن بۆ ASM', 
+                price: 'مێنۆی زیرەک', 
+                file: 'burger.glb',
                 scale: '0.5 0.5 0.5' 
             }
         };
 
+        const modelViewer = document.getElementById('akam-model');
+        const progressBar = document.querySelector('.progress-bar');
+        const updateBar = document.querySelector('.update-bar');
+
+        // کۆدی هێڵی بارکردن
+        modelViewer.addEventListener('progress', (e) => {
+            const percent = e.detail.totalProgress * 100;
+            updateBar.style.width = `${percent}%`;
+            if (percent === 100) {
+                progressBar.classList.add('hide');
+            } else {
+                progressBar.classList.remove('hide');
+            }
+        });
+
         function initMenu() {
-            const hash = window.location.hash.replace('#', '').toLowerCase();
-            const food = foods[hash] || foods['pizza'];
+            // وەرگرتنی هاشتاگ لە لینکەوە
+            let hash = window.location.hash.replace('#', '').toLowerCase();
             
-            const modelViewer = document.getElementById('akam-model');
+            // ئەگەر هاشتاگەکە نەبوو، دیفۆڵت بەکاربێنە
+            const food = foods[hash] || foods['default'];
             
             document.getElementById('food-name').innerText = food.name;
             document.getElementById('food-price').innerText = food.price;
             
             modelViewer.src = food.file;
-            
-            // ئەم بەشە قەبارەکە ڕێکدەخات بۆ ئەوەی زۆر گەورە نەبێت
             modelViewer.setAttribute('scale', food.scale);
         }
 
         window.addEventListener('hashchange', initMenu);
         window.onload = initMenu;
     </script>
-
-
-
+</body>
+</html>
 
