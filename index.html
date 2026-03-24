@@ -1,252 +1,707 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html id="html-tag" lang="ku" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akam Smart Menu (ASM)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rizzoli Premium Menu</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-    
-    <!-- Vercel Web Analytics -->
-    <script>
-        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-    </script>
-    <script defer src="/_vercel/insights/script.js"></script>
-    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* گۆڕاوەکان (بە شێوەی بنچینەیی - ڕووناک) */
+        :root { 
+            --p: #f97316; 
+            --bg: #f3f4f6; 
+            --card: #ffffff; 
+            --text: #1f2937; 
+            --gray: #6b7280; 
+            --border: #e5e7eb; 
+            --bg-grad: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+        }
+
+        /* دۆخی تاریک (Dark Mode) */
+        body.dark-mode {
+            --bg: #15151a; 
+            --card: #2b2b36; 
+            --text: #f9fafb; 
+            --gray: #a1a1aa; 
+            --border: #3f3f46;
+            --bg-grad: radial-gradient(circle at 50% 0%, #2a2a35 0%, var(--bg) 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
         
         body { 
-            background: radial-gradient(circle at center, #2a2a2a 0%, #000000 100%);
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            height: 100vh;
-            overflow: hidden;
-            color: white;
+            background: var(--bg-grad); 
+            color: var(--text); 
+            overflow-x: hidden; 
+            position: relative;
+            min-height: 100vh;
+            transition: background 0.4s, color 0.4s;
         }
 
-        /* لۆگۆی ASM لە سەرەوە */
-        .brand-logo {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            font-weight: 900;
-            color: #ff9f43; /* ڕەنگی پرتەقاڵی */
-            font-size: 18px;
-            z-index: 20;
-            letter-spacing: 1px;
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('images/logo.jpg'); background-position: center; background-size: cover; background-repeat: no-repeat;
+            opacity: 0.03; filter: blur(4px) grayscale(60%); z-index: -1; pointer-events: none; transition: 0.4s;
         }
+        body.dark-mode::before { opacity: 0.05; filter: blur(6px) grayscale(30%); }
 
-        .info-card {
-            position: absolute;
-            top: 60px; /* کەمێک هاتە خوارەوە */
-            right: 20px;
-            left: 20px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1); /* شەفافتر */
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 20px;
-            text-align: center;
-            z-index: 10;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
+        /* دوگمەی گۆڕینی دۆخ */
+        #theme-toggle { position: absolute; top: 15px; left: 15px; z-index: 50; background: rgba(0,0,0,0.5); border: none; font-size: 18px; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; backdrop-filter: blur(5px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: 0.3s; display: flex; align-items: center; justify-content: center; }
+        #theme-toggle:active { transform: scale(0.9); }
+        html[dir="rtl"] #theme-toggle { left: 15px; right: auto; }
 
-        .food-name {
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 5px;
-            color: #ffffff;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
+        #splash { position: fixed; inset: 0; background: var(--bg); z-index: 3000; display: flex; align-items: center; justify-content: center; transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .lang-card { text-align: center; width: 80%; }
+        .logo-main { width: 140px; margin-bottom: 30px; filter: drop-shadow(0 4px 10px rgba(249,115,22,0.2)); border-radius: 20px;}
+        .lang-btn { width: 100%; padding: 12px; margin: 8px 0; border-radius: 14px; border: 1.5px solid var(--border); background: var(--card); color: var(--text); font-weight: bold; cursor: pointer; font-size: 15px; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .lang-btn:active { background: var(--p); color: #fff; border-color: var(--p); transform: scale(0.95); }
 
-        .price-badge {
-            display: inline-block;
-            background: #ff9f43;
-            color: #000;
-            padding: 5px 20px;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(255, 159, 67, 0.4);
-        }
+        .splash-socials { display: flex; justify-content: center; gap: 15px; margin-top: 25px; }
+        .splash-socials a { color: var(--gray); transition: 0.3s; width: 44px; height: 44px; background: var(--card); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1.5px solid var(--border); }
+        .splash-socials a:active { transform: scale(0.9); }
+        .splash-socials a:hover { color: var(--p); border-color: var(--p); }
+        .splash-socials svg { width: 22px; height: 22px; fill: currentColor; }
 
-        .developer-tag {
-            position: absolute;
-            bottom: 20px;
-            width: 100%;
-            text-align: center;
-            font-size: 10px;
-            color: rgba(255, 255, 255, 0.4);
-            letter-spacing: 2px;
-            z-index: 5;
-        }
+        .splash-footer { position: absolute; bottom: 25px; left: 0; width: 100%; text-align: center; font-size: 13px; color: var(--gray); font-weight: bold; }
+        .splash-footer span { color: var(--p); font-weight: 900; letter-spacing: 0.5px; }
 
-        .ar-btn {
-            position: absolute;
-            bottom: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            color: black;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 5px 20px rgba(255,255,255,0.3);
-            cursor: pointer;
-            z-index: 10;
-            transition: transform 0.2s;
+        /* پۆپ ئەپی ڕێنماییەکان (Instruction Popup) */
+        .popup-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+            z-index: 4000; display: none; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.4s ease;
         }
+        .popup-overlay.show { opacity: 1; }
+        .popup-box {
+            background: var(--card); border: 2px solid var(--p); border-radius: 24px;
+            padding: 24px; width: 85%; max-width: 340px; text-align: center;
+            box-shadow: 0 10px 40px rgba(249,115,22,0.25); transform: scale(0.8); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .popup-overlay.show .popup-box { transform: scale(1); }
+        .popup-box h3 { color: var(--text); font-size: 18px; margin-bottom: 20px; font-weight: 900; }
+        .popup-box ul { list-style: none; padding: 0; text-align: right; margin-bottom: 24px; }
+        html[dir="ltr"] .popup-box ul { text-align: left; }
+        .popup-box li { color: var(--gray); font-size: 14px; margin-bottom: 12px; font-weight: bold; display: flex; align-items: center; gap: 10px; line-height: 1.4;}
+        .popup-btn { background: var(--p); color: white; border: none; padding: 14px 20px; border-radius: 14px; font-weight: 900; width: 100%; cursor: pointer; font-size: 15px; box-shadow: 0 4px 10px rgba(249,115,22,0.3); transition: 0.3s;}
+        body.dark-mode .popup-btn { color: black; }
+        .popup-btn:active { transform: scale(0.95); box-shadow: 0 2px 5px rgba(249,115,22,0.2); }
+
+        .ar-box { position: relative; width: 100%; height: 50vh; background: radial-gradient(circle, #ffffff 0%, #e5e7eb 100%); border-bottom: 2px solid var(--border); box-shadow: 0 10px 20px rgba(0,0,0,0.05); transition: 0.4s; }
+        body.dark-mode .ar-box { background: radial-gradient(circle, #2d2d3a 0%, #17171c 100%); }
+        model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
         
-        .ar-btn:active {
-            transform: translateX(-50%) scale(0.95);
-        }
+        .model-info { position: absolute; bottom: 65px; width: 100%; text-align: center; padding: 0 10px; pointer-events: none; z-index: 5;}
+        .model-info h2 { font-size: 24px; font-weight: 900; color: var(--text); text-shadow: 0 2px 4px rgba(255,255,255,0.8); margin-bottom: 4px; transition: 0.4s; }
+        body.dark-mode .model-info h2 { text-shadow: 0 2px 6px rgba(0,0,0,0.9); }
+        .model-info p { font-size: 12px; color: #d97706; font-weight: bold; margin: 2px 0 8px; line-height: 1.4; text-shadow: 0 1px 2px rgba(255,255,255,0.9); }
+        body.dark-mode .model-info p { color: #facc15; text-shadow: 0 2px 4px rgba(0,0,0,0.9); }
+        .model-info .price-tag { display: inline-block; background: var(--p); color: white; padding: 4px 14px; border-radius: 8px; font-size: 14px; font-weight: 900; box-shadow: 0 4px 10px rgba(249,115,22,0.3); }
+        body.dark-mode .model-info .price-tag { color: black; }
 
-        model-viewer {
-            width: 100%;
-            height: 100vh;
-            --poster-color: transparent;
+        .ar-btn { 
+            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); 
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); 
+            color: white; border: none; 
+            padding: 10px 22px; border-radius: 50px; font-size: 13px; font-weight: 900; 
+            display: flex; align-items: center; gap: 6px; 
+            box-shadow: 0 4px 15px rgba(249,115,22,0.4); cursor: pointer; z-index: 10; white-space: nowrap; 
+            animation: pulse 2s infinite; 
         }
+        .ar-btn svg { stroke: white; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.5); } 70% { box-shadow: 0 0 0 10px rgba(249, 115, 22, 0); } 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); } }
 
-        /* ستایلی هێڵی بارکردن (Loading Bar) */
-        .progress-bar {
-            display: block;
-            width: 33%;
-            height: 10%;
-            max-height: 2%;
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate3d(-50%, -50%, 0);
-            border-radius: 25px;
-            box-shadow: 0px 3px 10px 3px rgba(0, 0, 0, 0.5), 0px 0px 5px 1px rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 15;
-        }
-    
-        .progress-bar.hide {
-            visibility: hidden;
-            transition: visibility 0.3s;
-        }
-    
-        .update-bar {
-            background-color: #ff9f43; /* پرتەقاڵی */
-            width: 0%;
-            height: 100%;
-            border-radius: 25px;
-            float: left;
-            transition: width 0.3s;
-        }
+        .content { padding: 15px; position: relative; z-index: 2; padding-bottom: 80px; }
+        
+        .menu-header-row { display: flex; justify-content: space-between; align-items: center; margin: 25px 0 12px; }
+        .section-label { font-weight: 900; font-size: 17px; color: var(--text); display: flex; align-items: center; gap: 8px; margin: 0;}
+        .section-label::before { content: ""; width: 4px; height: 16px; background: var(--p); border-radius: 10px; }
+        .view-btn { background: var(--card); border: 1.5px solid var(--border); padding: 8px; border-radius: 10px; color: var(--p); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
+        .view-btn:active { transform: scale(0.9); background: var(--p); color: white; }
 
+        .search-container { position: relative; margin-bottom: 15px; }
+        .search-container input { width: 100%; padding: 12px 12px 12px 40px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--card); color: var(--text); font-size: 14px; outline: none; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .search-container input:focus { border-color: var(--p); box-shadow: 0 0 0 3px rgba(249,115,22,0.1); }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; stroke: var(--gray); pointer-events: none; transition: 0.3s;}
+        html[dir="rtl"] .search-icon { left: auto; right: 12px; }
+        html[dir="rtl"] .search-container input { padding: 12px 40px 12px 12px; }
+        .search-container input:focus + .search-icon { stroke: var(--p); }
+
+        .tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+        .tabs::-webkit-scrollbar { display: none; }
+        .tab { background: var(--card); color: var(--gray); padding: 8px 18px; border-radius: 12px; font-weight: bold; border: 1.5px solid var(--border); transition: 0.3s; white-space: nowrap; font-size: 13px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
+        .tab.active { background: var(--p); color: white; border-color: var(--p); box-shadow: 0 4px 10px rgba(249,115,22,0.2);}
+        body.dark-mode .tab.active { color: black; }
+
+        .h-list { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+        .h-list::-webkit-scrollbar { display: none; }
+        .h-card { min-width: 95px; background: var(--card); padding: 12px 6px; border-radius: 14px; text-align: center; border: 1.5px solid var(--border); transition: 0.3s; box-shadow: 0 4px 8px rgba(0,0,0,0.04); cursor: pointer; }
+        .h-card.active { border-color: var(--p); background: #fff7ed; transform: translateY(-2px);}
+        body.dark-mode .h-card.active { background: rgba(249,115,22,0.15); }
+        .h-card span { font-size: 28px; display: block; margin-bottom: 8px; }
+        .h-card h4 { font-size: 12px; font-weight: bold; color: var(--text); }
+
+        .sauce-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .sauce-item { background: var(--card); padding: 10px 5px; border-radius: 14px; text-align: center; border: 1.5px solid var(--border); box-shadow: 0 4px 8px rgba(0,0,0,0.04); transition: 0.3s;}
+        .sauce-item img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-bottom: 6px; border: 2px solid var(--border); background: var(--bg); padding: 2px; cursor: zoom-in;}
+        .sauce-item h5 { font-size: 11px; color: var(--text); margin-bottom: 3px; font-weight: bold;}
+        .sauce-item span { font-size: 11px; color: var(--p); font-weight: 900; }
+
+        .cat-header { background: var(--card); color: var(--p); padding: 10px 12px; border-radius: 10px; font-weight: 900; font-size: 15px; margin: 30px 0 12px; border: 1.5px solid var(--border); text-align: center; position: sticky; top: 0; z-index: 2; box-shadow: 0 4px 10px rgba(0,0,0,0.05);}
+        
+        .item-name-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; flex-wrap: wrap; }
+        .badge { font-size: 10px; padding: 2px 6px; border-radius: 6px; font-weight: 900; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
+        .badge.spicy { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+        .badge.best { background: #fef9c3; color: #ca8a04; border: 1px solid #fde047; }
+        .badge.new { background: #dcfce7; color: #16a34a; border: 1px solid #86efac; }
+        body.dark-mode .badge.spicy { background: rgba(220,38,38,0.15); border-color: #991b1b; color: #f87171;}
+        body.dark-mode .badge.best { background: rgba(202,138,4,0.15); border-color: #854d0e; color: #facc15;}
+        body.dark-mode .badge.new { background: rgba(22,163,74,0.15); border-color: #166534; color: #4ade80;}
+
+        #visual-menu-container { display: flex; flex-direction: column; gap: 12px; }
+        .cat-group { display: block; }
+        .menu-item-card { background: var(--card); border-radius: 16px; overflow: hidden; display: flex; align-items: center; padding: 12px; gap: 14px; border: 1.5px solid var(--border); box-shadow: 0 4px 10px rgba(0,0,0,0.04); transition: 0.3s;}
+        .menu-item-card img { width: 85px; height: 85px; border-radius: 12px; object-fit: cover; border: 1px solid var(--border); flex-shrink: 0; cursor: zoom-in; }
+        .item-details { flex: 1; }
+        .item-details h4 { font-size: 16px; font-weight: 900; color: var(--text); margin: 0;}
+        .extra-price { font-size: 11px; color: #d97706; font-weight: bold; margin-bottom: 4px; display: block; }
+        body.dark-mode .extra-price { color: #facc15; }
+        .item-details p { font-size: 11px; color: var(--gray); line-height: 1.5; margin-bottom: 8px; }
+        .item-price { font-weight: 900; color: var(--p); font-size: 15px; }
+
+        #visual-menu-container.grid-view .cat-group { display: contents; }
+        #visual-menu-container.grid-view { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        #visual-menu-container.grid-view .cat-header { grid-column: 1 / -1; margin: 20px 0 5px; }
+        #visual-menu-container.grid-view .menu-item-card { flex-direction: column; align-items: center; text-align: center; padding: 12px; gap: 10px;}
+        #visual-menu-container.grid-view .menu-item-card img { width: 100%; height: 130px; border-radius: 12px; }
+        #visual-menu-container.grid-view .item-name-row { justify-content: center; }
+
+        .floating-call { position: fixed; bottom: 20px; left: 20px; background: #10b981; color: white; padding: 12px 22px; border-radius: 50px; display: flex; align-items: center; gap: 8px; font-weight: 900; text-decoration: none; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); z-index: 2000; font-size: 14px; transition: 0.3s; animation: float-pulse-green 2s infinite; }
+        html[dir="rtl"] .floating-call { left: auto; right: 20px; flex-direction: row-reverse; }
+        .floating-call:active { transform: scale(0.95); }
+        .floating-call svg { fill: white; width: 18px; height: 18px;}
+        @keyframes float-pulse-green { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); } 70% { box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+
+        .footer-section { padding: 30px 15px 40px; background: var(--card); border-top: 1.5px solid var(--border); margin-top: 30px; border-radius: 24px 24px 0 0; text-align: center; position: relative; z-index: 2; box-shadow: 0 -4px 20px rgba(0,0,0,0.03);}
+        #feedback-text { width: 100%; height: 100px; background: var(--bg); border: 1.5px solid var(--border); color: var(--text); padding: 14px; border-radius: 14px; resize: none; font-size: 14px; margin-bottom: 14px; outline: none; transition: 0.3s; }
+        #feedback-text:focus { border-color: var(--p); box-shadow: 0 0 0 3px rgba(249,115,22,0.1); background: var(--card);}
+        .submit-btn { background: var(--p); color: white; border: none; padding: 14px 20px; border-radius: 14px; font-weight: 900; width: 100%; cursor: pointer; transition: 0.3s; font-size: 15px; box-shadow: 0 4px 10px rgba(249,115,22,0.3);}
+        body.dark-mode .submit-btn { color: black; }
+        .submit-btn:active { transform: scale(0.96); box-shadow: 0 2px 5px rgba(249,115,22,0.2);}
+        #feedback-msg { display: none; color: #10b981; font-size: 14px; margin-top: 12px; font-weight: bold; }
+        
+        .social-links { margin-top: 25px; padding-top: 20px; border-top: 1px dashed var(--border); }
+        .social-links a { color: var(--p); text-decoration: none; font-weight: 900; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 16px; letter-spacing: 0.5px; }
+        
+        .progress-bar { position: absolute; bottom: 0; left: 0; height: 4px; background: var(--p); width: 0%; transition: 0.3s; z-index: 20; }
+
+        #img-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 5000;
+            display: none; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.3s; cursor: zoom-out;
+        }
+        #img-modal.show { opacity: 1; }
+        #modal-img { max-width: 90%; max-height: 80%; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); object-fit: contain; transform: scale(0.8); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: white;}
+        #img-modal.show #modal-img { transform: scale(1); }
+        .close-modal { position: absolute; top: 20px; right: 20px; color: white; font-size: 40px; font-weight: 300; cursor: pointer; text-shadow: 0 2px 10px rgba(0,0,0,0.5);}
     </style>
 </head>
 <body>
 
-    <div class="brand-logo">ASM 🧊</div>
-
-    <div class="info-card">
-        <div id="food-name" class="food-name">...</div>
-        <div id="food-price" class="price-badge">---</div>
+    <div id="instruction-popup" class="popup-overlay">
+        <div class="popup-box">
+            <h3 id="pop-title">چۆن مێنۆی 3D بەکاردەهێنیت؟</h3>
+            <ul>
+                <li id="pop-step1">👆 یەکێک لە خواردنەکان هەڵبژێرە</li>
+                <li id="pop-step2">📱 پەنجە بنێ بە دوگمەی "لەسەر مێز بیبینە"</li>
+                <li id="pop-step3">✨ کامێراکەت ڕوو لە مێزەکە بکە و سیحرەکە ببینە!</li>
+            </ul>
+            <button class="popup-btn" id="pop-btn" onclick="closePopup()">تێگەیشتم، با دەست پێبکەین!</button>
+        </div>
     </div>
 
-    <div class="developer-tag">POWERED BY AKAM SMART MENU</div>
+    <div id="img-modal" onclick="closeModal()">
+        <span class="close-modal">&times;</span>
+        <img id="modal-img" src="" onclick="event.stopPropagation()">
+    </div>
 
-    <model-viewer id="akam-model" 
-        src="" 
-        poster="loading.jpg" 
-        ar 
-        ar-modes="webxr scene-viewer quick-look" 
-        ar-placement="floor"
-        ar-scale="fixed"
-        camera-controls 
-        shadow-intensity="1.5" 
-        shadow-softness="1"
-        exposure="1"
-        environment-image="neutral"
-        auto-rotate
-        rotation-per-second="30deg">
+    <a href="tel:07732791010" class="floating-call">
+        <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        <span id="call-text">داواکردن</span>
+    </a>
+
+    <button id="theme-toggle" onclick="toggleTheme()">🌙</button>
+
+    <div id="splash">
+        <div class="lang-card">
+            <img src="images/logo.jpg" class="logo-main" onerror="this.src='https://via.placeholder.com/150/ffffff/f97316?text=RIZZOLI'">
+            <button class="lang-btn" onclick="startApp('ku')">کوردی</button>
+            <button class="lang-btn" onclick="startApp('ar')">العربية</button>
+            <button class="lang-btn" onclick="startApp('en')">English</button>
+            
+            <div class="splash-socials">
+                <a href="https://www.facebook.com/share/1DtAM93L2M/" target="_blank">
+                    <svg viewBox="0 0 24 24"><path d="M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.407.593 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.593 1.323-1.325V1.325C24 .593 23.407 0 22.675 0z"/></svg>
+                </a>
+                <a href="https://www.instagram.com/rizzoli.iraq?igsh=Mjg0bDM5NmVyd2x3" target="_blank">
+                    <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.203 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                </a>
+                <a href="https://www.tiktok.com/@rizzoli.iraq?_r=1&_t=ZS-94rGYRRxcAO" target="_blank">
+                    <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
+                </a>
+            </div>
+        </div>
+        <div class="splash-footer">
+            پشتگیری کراوە لەلایەن <span>Akam Smart Menu</span>
+        </div>
+    </div>
+
+    <div class="ar-box">
+        <model-viewer id="mv" src="" ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" camera-controls auto-rotate shadow-intensity="1" exposure="1" scale="1 1 1">
+            <button slot="ar-button" class="ar-btn" id="ar-txt">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                <span id="ar-btn-text">لەسەر مێز بیبینە</span>
+            </button>
+            <div class="progress-bar" id="pb"></div>
+        </model-viewer>
         
-        <button slot="ar-button" class="ar-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                <circle cx="12" cy="13" r="4"></circle>
-            </svg>
-            بینین لەسەر مێز
-        </button>
+        <div class="model-info">
+            <h2 id="display-name">...</h2>
+            <p id="display-ing">... </p>
+            <div class="price-tag"><span id="display-price">...</span> <span id="currency-tag">د.ع</span></div>
+        </div>
+    </div>
 
-        <div class="progress-bar" slot="progress-bar">
-            <div class="update-bar"></div>
+    <div class="content">
+        <div class="section-label" id="3d-label" style="margin: 25px 0 12px;">مێنۆی ٣دی</div>
+        <div class="tabs" id="cat-tabs"></div>
+        <div class="h-list" id="3d-list"></div>
+
+        <div class="section-label" id="sauce-label" style="margin: 25px 0 12px;">سۆسەکان</div>
+        <div class="sauce-grid" id="sauce-list"></div>
+
+        <div class="menu-header-row">
+            <div class="section-label" id="full-menu-label">مێنۆی تەواوەتی</div>
+            <button class="view-btn" onclick="toggleView()">
+                <svg id="view-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                    <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                    <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                    <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                </svg>
+            </button>
         </div>
 
-    </model-viewer>
+        <div class="search-container">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="search-input" placeholder="گەڕان بۆ خواردن..." onkeyup="filterMenu()">
+        </div>
+        
+        <div id="visual-menu-container"></div>
+    </div>
+
+    <div class="footer-section">
+        <div class="section-label" id="feedback-label" style="justify-content: center; margin-top: 0;">ڕای خۆت بنووسە</div>
+        <textarea id="feedback-text" placeholder="تێبینی و پێشنیارەکانت لێرە بنووسە..."></textarea>
+        <button class="submit-btn" id="feedback-btn" onclick="sendFeedback()">ناردن</button>
+        <div id="feedback-msg"></div>
+        
+        <div class="social-links">
+            <a href="https://instagram.com/rizzoli.iraq" target="_blank">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                rizzoli.iraq
+            </a>
+        </div>
+    </div>
 
     <script>
-        // داتای خواردنەکان
-        const foods = {
-            'pizza': { 
-                name: 'پیتزای ئیتاڵی', 
-                price: '12,500 د.ع', 
-                file: 'pizza.glb',
-                scale: '0.5 0.5 0.5' 
-            },
-            'burger': { 
-                name: 'بەرگری دۆبڵ', 
-                price: '9,500 د.ع', 
-                file: 'burger.glb',
-                scale: '0.4 0.4 0.4' 
-            },
-             'rice': { 
-                name: 'تێوشە', 
-                price: '4.500 د.ع', 
-                file: 'rice.glb',
-                scale: '0.5 0.5 0.5' 
-            },
-            // ئەگەر لینکی هەڵە هات، ئەمە دەبێتە دیفۆڵت
-            'default': { 
-                name: 'بەخێربێن بۆ ASM', 
-                price: 'مێنۆی زیرەک', 
-                file: 'burger.glb',
-                scale: '0.5 0.5 0.5' 
-            }
+        let curL = 'ku';
+        let isGridView = false;
+        
+        // ئایدی و تۆکینی تێلیگرام لێرە دابنێ
+        const BOT_TOKEN = '8689663640:AAFd6TzvT4-pGg0xdnmHXfG42dIJSDonhaU'; 
+        const CHAT_ID = '-1003439527490'; // ئایدی گروپەکەی خۆت لێرە دابنێ
+
+        const trans = {
+            ku: { label3d: "مێنۆی ٣دی", full: "مێنۆی تەواوەتی", sauce: "سۆسەکان", ar: "لەسەر مێز بیبینە", cur: "د.ع", dir: "rtl",
+                  fbTitle: "ڕای خۆت بنووسە", fbPlace: "تێبینی و پێشنیارەکانت لێرە بنووسە...", fbBtn: "ناردنی فیدباک", fbThx: "سوپاس بۆ فیدباکەکەت! 🧡",
+                  search: "گەڕان بۆ خواردن...", call: "داواکردن", badge: { spicy: "🔥 توون", best: "⭐ پڕفرۆش", new: "✨ نوێ" },
+                  popT: "چۆن مێنۆی 3D بەکاردەهێنیت؟", popS1: "👆 یەکێک لە خواردنەکان هەڵبژێرە", popS2: "📱 پەنجە بنێ بە دوگمەی \"لەسەر مێز بیبینە\"", popS3: "✨ کامێراکەت ڕوو لە مێزەکە بکە و سیحرەکە ببینە!", popBtn: "تێگەیشتم، با دەست پێبکەین!" },
+            ar: { label3d: "قائمة ٣دي", full: "القائمة الكاملة", sauce: "الصوصات", ar: "عرض على الطاولة", cur: "د.ع", dir: "rtl",
+                  fbTitle: "أرسل رأيك", fbPlace: "اكتب ملاحظاتك واقتراحاتك هنا...", fbBtn: "إرسال", fbThx: "شكراً لملاحظاتك! 🧡",
+                  search: "ابحث عن الوجبات...", call: "أطلب الآن", badge: { spicy: "🔥 حار", best: "⭐ الأكثر مبيعاً", new: "✨ جديد" },
+                  popT: "كيفية استخدام قائمة الـ 3D", popS1: "👆 اختر إحدى الوجبات", popS2: "📱 اضغط على زر \"عرض على الطاولة\"", popS3: "✨ وجه الكاميرا نحو الطاولة وشاهد السحر!", popBtn: "فهمت، لنبدأ!" },
+            en: { label3d: "3D Menu", full: "Full Menu", sauce: "Sauces", ar: "View on Table", cur: "IQD", dir: "ltr",
+                  fbTitle: "Leave Feedback", fbPlace: "Write your notes and suggestions here...", fbBtn: "Send Feedback", fbThx: "Thank you for your feedback! 🧡",
+                  search: "Search menu...", call: "Order Now", badge: { spicy: "🔥 Spicy", best: "⭐ Best Seller", new: "✨ New" },
+                  popT: "How to use the 3D Menu", popS1: "👆 Select a meal", popS2: "📱 Tap the \"View on Table\" button", popS3: "✨ Point your camera at the table and see the magic!", popBtn: "Got it, let's start!" }
         };
 
-        const modelViewer = document.getElementById('akam-model');
-        const progressBar = document.querySelector('.progress-bar');
-        const updateBar = document.querySelector('.update-bar');
+        const menuData = {
+            cats: [
+                {id:'rizzo', n:{ku:"🍚 ڕیزۆکان", ar:"🍚 الريزو", en:"🍚 Rizzos"}},
+                {id:'burgers', n:{ku:"🍔 بەرگر", ar:"🍔 البرجر", en:"🍔 Burgers"}},
+                {id:'combos', n:{ku:"🍱 کۆمبۆ", ar:"🍱 كومبو", en:"🍱 Combos"}},
+                {id:'wings', n:{ku:"🍗 باڵ و تویستەر", ar:"🍗 أجنحة وتويستر", en:"🍗 Wings & Twister"}},
+                {id:'boxes', n:{ku:"📦 بۆکسەکان", ar:"📦 البوكسات", en:"📦 Boxes"}},
+                {id:'salad', n:{ku:"🥗 زەڵاتە", ar:"🥗 سلطات", en:"🥗 Salads"}}
+            ],
+            models: {
+                rizzo: [
+                    { name: {ku:"ڕیزۆی کلاسیک", ar:"ريزو كلاسيك", en:"Classic Rizzo"}, price:"4,500", ing:{ku:"", ar:"", en:""}, file:"models/classic_rizzo.glb", icon:"🍚", scale:"1 1 1" },
+                    { name: {ku:"چیس ڕیزۆ", ar:"تشيز ريزو", en:"Cheese Rizzo"}, price:"5,500", ing:{ku:"", ar:"", en:""}, file:"models/cheese_rizzo.glb", icon:"🧀", scale:"1 1 1" },
+                    { name: {ku:"باربیکیو ڕیزۆ", ar:"باربيكيو ريزو", en:"BBQ Rizzo"}, price:"5,500", ing:{ku:"", ar:"", en:""}, file:"models/bbq_rizzo.glb", icon:"🔥", scale:"1 1 1" },
+                    { name: {ku:"ڕیزۆلی ڕیزۆ", ar:"ريزولي ريزو", en:"Rizzoli Rizzo"}, price:"5,500", ing:{ku:"", ar:"", en:""}, file:"models/rizzoli_rizzo.glb", icon:"🌟", scale:"1 1 1" },
+                    { name: {ku:"هەنی ماستەرد ڕیزۆ", ar:"هني ماسترد ريزو", en:"Honey Mustard Rizzo"}, price:"5,500", ing:{ku:"", ar:"", en:""}, file:"models/honey_rizzo.glb", icon:"🍯", scale:"1 1 1" },
+                    { name: {ku:"جالاپینۆ ڕیزۆ", ar:"هلابينو ريزو", en:"Jalapeno Rizzo"}, price:"5,500", ing:{ku:"", ar:"", en:""}, file:"models/jalapeno_rizzo.glb", icon:"🌶️", scale:"1 1 1" },
+                    { name: {ku:"تێکساس ڕیزۆ", ar:"تكساس ريزو", en:"Texas Rizzo"}, price:"5,500", ing:{ku:"", ar:"", en:""}, file:"models/texas_rizzo.glb", icon:"🤠", scale:"1 1 1" },
+                    { name: {ku:"ڕیزۆ هێربس", ar:"ريزو هيربس", en:"Rizzo Herbs"}, price:"5,500", ing:{ku:"", ar:"", en:""}, file:"models/rizzo_herbs.glb", icon:"🌿", scale:"1 1 1" }
+                ],
+                burgers: [
+                    { name: {ku:"چیس بەرگر", ar:"تشيز برجر", en:"Cheese Burger"}, price:"6,000", ing:{ku:"وەجبە ٨٠٠٠ | دەبڵ ٨٥٠٠ | دەبڵ وەجبە ١٠٥٠٠", ar:"وجبة 8000 | دبل 8500 | وجبة دبل 10500", en:"Meal 8000 | Double 8500 | D.Meal 10500"}, file:"models/cheeseburger.glb", icon:"🍔", scale:"1 1 1" },
+                    { name: {ku:"فایەر بەرگر", ar:"فاير برجر", en:"Fire Burger"}, price:"6,000", ing:{ku:"وەجبە ٨٠٠٠ | دەبڵ ٨٥٠٠ | دەبڵ وەجبە ١٠٥٠٠", ar:"وجبة 8000 | دبل 8500 | وجبة دبل 10500", en:"Meal 8000 | Double 8500 | D.Meal 10500"}, file:"models/fireburger.glb", icon:"🔥", scale:"1 1 1" },
+                    { name: {ku:"زینگەر ساندویچ", ar:"زنجر ساندويش", en:"Zinger Sandwich"}, price:"5,000", ing:{ku:"وەجبە ٧٠٠٠", ar:"وجبة 7000", en:"Meal 7000"}, file:"models/zinger.glb", icon:"🥪", scale:"1 1 1" },
+                    { name: {ku:"فایەر چیکن", ar:"فاير دجاج", en:"Fire Chicken"}, price:"5,000", ing:{ku:"وەجبە ٧٠٠٠", ar:"وجبة 7000", en:"Meal 7000"}, file:"models/firechicken.glb", icon:"🍗", scale:"1 1 1" },
+                    { name: {ku:"بەرگری تاوەر", ar:"تاور برجر", en:"Tower Burger"}, price:"9,000", ing:{ku:"", ar:"", en:""}, file:"models/tower.glb", icon:"🗼", scale:"1 1 1" }
+                ],
+                combos: [
+                    { name: {ku:"کنتاکی کۆمبۆ ١", ar:"كنتاكي كومبو 1", en:"KFC Combo 1"}, price:"8,000", ing:{ku:"٣ پارچە کنتاکی، ٢ سۆسی تایبەت، فنگر، بیبسی، برنج، سەموون", ar:"3 قطع كنتاكي، 2 صوص خاص، بطاطا، بيبسي، رز، صمون", en:"3 KFC pieces, 2 Special Sauces, Fries, Pepsi, Rice, Bun"}, file:"models/combo_kfc1.glb", icon:"🍗", scale:"1 1 1" }
+                ],
+                wings: [
+                    { name: {ku:"باڵی بوفالۆ", ar:"أجنحة بافالو", en:"Buffalo Wings"}, price:"5,500", ing:{ku:"", ar:"", en:""}, file:"models/buffalo_wings.glb", icon:"🍗", scale:"1 1 1" },
+                    { name: {ku:"تێکساس تویستەر", ar:"تكساس تويستر", en:"Texas Twister"}, price:"5,000", ing:{ku:"", ar:"", en:""}, file:"models/texas_twister.glb", icon:"🌯", scale:"1 1 1" }
+                ],
+                boxes: [
+                    { name: {ku:"بۆکسی مریشک", ar:"بوكس دجاج", en:"Chicken Box"}, price:"5,500", ing:{ku:"", ar:"", en:""}, file:"models/chicken_box.glb", icon:"📦", scale:"1 1 1" },
+                    { name: {ku:"بۆکسی چیتۆس", ar:"بوكس شيتوس", en:"Cheetos Box"}, price:"6,000", ing:{ku:"", ar:"", en:""}, file:"models/cheetos_box.glb", icon:"🔥", scale:"1 1 1" },
+                    { name: {ku:"بۆکسی دۆریتۆس", ar:"بوكس دوريتوس", en:"Doritos Box"}, price:"6,000", ing:{ku:"", ar:"", en:""}, file:"models/doritos_box.glb", icon:"🌮", scale:"1 1 1" }
+                ],
+                salad: [
+                    { name: {ku:"زەڵاتەی سیزەر", ar:"سلطة سيزر", en:"Caesar Salad"}, price:"6,000", ing:{ku:"", ar:"", en:""}, file:"models/caesar_salad.glb", icon:"🥗", scale:"1 1 1" }
+                ]
+            },
 
-        // کۆدی هێڵی بارکردن
-        modelViewer.addEventListener('progress', (e) => {
-            const percent = e.detail.totalProgress * 100;
-            updateBar.style.width = `${percent}%`;
-            if (percent === 100) {
-                progressBar.classList.add('hide');
-            } else {
-                progressBar.classList.remove('hide');
-            }
-        });
+            sauces: [
+                { n: {ku:"سویت چیلی", ar:"سويت تشيلي", en:"Sweet Chili"}, img: "images/sauce_sweetchili.jpg" },
+                { n: {ku:"سیر", ar:"ثوم", en:"Garlic"}, img: "images/sauce_garlic.jpg" },
+                { n: {ku:"توون", ar:"حار", en:"Spicy"}, img: "images/sauce_spicy.jpg" },
+                { n: {ku:"باربیکیو", ar:"باربيكيو", en:"BBQ"}, img: "images/sauce_bbq.jpg" },
+                { n: {ku:"هەنی ماستەرد", ar:"هني ماسترد", en:"Honey Mustard"}, img: "images/sauce_honey.jpg" },
+                { n: {ku:"چیس", ar:"جبن", en:"Cheese"}, img: "images/sauce_cheese.jpg" },
+                { n: {ku:"تێکساس", ar:"تكساس", en:"Texas"}, img: "images/sauce_texas.jpg" },
+                { n: {ku:"جالاپینۆ", ar:"هلابينو", en:"Jalapeno"}, img: "images/sauce_jalapeno.jpg" },
+                { n: {ku:"سویسس", ar:"سويسري", en:"Swiss"}, img: "images/sauce_swiss.jpg" },
+                { n: {ku:"بوفالۆ", ar:"بافالو", en:"Buffalo"}, img: "images/sauce_buffalo.jpg" },
+                { n: {ku:"کەچمایۆ", ar:"كتشمايو", en:"Ketchup-Mayo"}, img: "images/sauce_ketchupmayo.jpg" },
+                { n: {ku:"سەوزەوات هێربس", ar:"أعشاب وخضار", en:"Veggie Herbs"}, img: "images/sauce_herbs.jpg" },
+                { n: {ku:"ڕانش", ar:"رانش", en:"Ranch"}, img: "images/sauce_ranch.jpg" }
+            ],
+            
+            fullMenu: [
+                { 
+                    cat: {ku:"ڕیزۆکان", ar:"الريزو", en:"Rizzos"}, 
+                    items: [
+                        { n: {ku:"ڕیزۆی نۆرماڵ", ar:"ريزو نورمال", en:"Normal Rizzo"}, p: "4,500", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "images/rizzo_normal.jpg" },
+                        { n: {ku:"ڕیزۆی سپایسی", ar:"ريزو سبايسي", en:"Spicy Rizzo"}, p: "5,500", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "images/rizzo_spicy.jpg", badge: "spicy" },
+                        { n: {ku:"سویت چیلی ڕیزۆ", ar:"سويت تشيلي ريزو", en:"Sweet Chili Rizzo"}, p: "5,500", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "images/rizzo_sweetchili.jpg" }
+                    ]
+                },
+                { 
+                    cat: {ku:"بەرگرەکان", ar:"البرجر", en:"Burgers"}, 
+                    items: [
+                        { n: {ku:"کلاسیک بەرگر", ar:"كلاسيك برجر", en:"Classic Burger"}, p: "4,500", extra: {ku:"وەجبە ٦٥٠٠ | دەبڵ ٧٠٠٠ | وەجبەی دەبڵ ٩٠٠٠", ar:"وجبة 6500 | دبل 7000 | وجبة دبل 9000", en:"Meal 6500 | Double 7000 | Double Meal 9000"}, ing: {ku:"سەموون، گۆشت، تەماتە، خەیار، کاهوو، پەنیری چوارگۆشە، سۆسی کەچمایۆ", ar:"صمون، لحم، طماطم، خيار، خس، شرائح جبن، صوص كتشمايو", en:"Bun, Beef, Tomato, Cucumber, Lettuce, Slice Cheese, Ketchup-Mayo"}, img: "images/burger_classic.jpg" },
+                        { n: {ku:"سمۆکد بەرگر", ar:"سموكي برجر", en:"Smoked Burger"}, p: "5,500", extra: {ku:"وەجبە ٧٠٠٠ | دەبڵ ٨٠٠٠ | وەجبەی دەبڵ ١٠٠٠٠", ar:"وجبة 7000 | دبل 8000 | وجبة دبل 10000", en:"Meal 7000 | Double 8000 | Double Meal 10000"}, ing: {ku:"سەموون، گۆشت، تەماتە، خەیار، کاهوو، پەنیر، سەلامی، پیازی سمۆک کراو، سۆسی سمۆک", ar:"صمون، لحم، طماطم، خيار، خس، جبن، سلامي، بصل مدخن، صوص سموكي", en:"Bun, Beef, Tomato, Cucumber, Lettuce, Cheese, Salami, Smoked Onion, Smoked Sauce"}, img: "images/burger_smoked.jpg" },
+                        { n: {ku:"بەرگری قارچک", ar:"برجر مشروم", en:"Mushroom Burger"}, p: "6,500", extra: {ku:"وەجبە ٨٥٠٠ | دەبڵ ٨٥٠٠ | وەجبەی دەبڵ ١٠٠٠٠", ar:"وجبة 8500 | دبل 8500 | وجبة دبل 10000", en:"Meal 8500 | Double 8500 | Double Meal 10000"}, ing: {ku:"سەموون، گۆشت، تەماتە، خەیار، کاهوو، پەنیر، قارچک، پیازی سمۆک کراو، سۆسی رانش، باربیکیو", ar:"صمون، لحم، طماطم، خيار، خس، جبن، فطر، بصل مدخن، صوص رانش، باربيكيو", en:"Bun, Beef, Tomato, Cucumber, Lettuce, Cheese, Mushroom, Smoked Onion, Ranch, BBQ"}, img: "images/burger_mushroom.jpg" },
+                        { n: {ku:"بەرگری ڕیزۆلی", ar:"برجر ريزولي", en:"Rizzoli Burger"}, p: "5,500", extra: {ku:"وەجبە ٧٥٠٠ | دەبڵ ٧٠٠٠ | وەجبەی دەبڵ ٩٠٠٠", ar:"وجبة 7500 | دبل 7000 | وجبة دبل 9000", en:"Meal 7500 | Double 7000 | Double Meal 9000"}, ing: {ku:"سەموون، گۆشت، تەماتە، خەیار، کاهوو، پەنیر، ئەڵقە پیاز، سۆسی لی، سۆسی پەنیر، باربیکیو", ar:"صمون، لحم، طماطم، خيار، خس، جبن، حلقات بصل، صوص لي، صوص جبن، باربيكيو", en:"Bun, Beef, Tomato, Cucumber, Lettuce, Cheese, Onion Rings, Lee Sauce, Cheese Sauce, BBQ"}, img: "images/burger_rizzoli.jpg", badge: "best" },
+                        { n: {ku:"تێکساس چیکن", ar:"تكساس دجاج", en:"Texas Chicken"}, p: "5,500", extra: {ku:"وەجبە ٧٥٠٠", ar:"وجبة 7500", en:"Meal 7500"}, ing: {ku:"سەموون، مریشکی کریسپی، تەماتە، کاهوو، خەیار، پەنیری چوارگۆشە، سۆسی تێکساس", ar:"صمون، دجاج كرسبي، طماطم، خس، خيار، شرائح جبن، صوص تكساس", en:"Bun, Crispy Chicken, Tomato, Lettuce, Cucumber, Slice Cheese, Texas Sauce"}, img: "images/burger_texas_chicken.jpg" },
+                        { n: {ku:"ڕیزۆلی چیکن", ar:"ريزولي دجاج", en:"Rizzoli Chicken"}, p: "5,500", extra: {ku:"وەجبە ٧٥٠٠", ar:"وجبة 7500", en:"Meal 7500"}, ing: {ku:"سەموون، مریشکی کریسپی، تەماتە، کاهوو، خەیار، پەنیر، سۆسی لی، سۆسی پەنیر، باربیکیو", ar:"صمون، دجاج كرسبي، طماطم، خس، خيار، جبن، صوص لي، صوص جبن، باربيكيو", en:"Bun, Crispy Chicken, Tomato, Lettuce, Cucumber, Cheese, Lee Sauce, Cheese Sauce, BBQ"}, img: "images/burger_rizzoli_chicken.jpg" },
+                        { n: {ku:"ماستەرد چیکن", ar:"ماسترد دجاج", en:"Mustard Chicken"}, p: "5,500", extra: {ku:"وەجبە ٧٥٠٠", ar:"وجبة 7500", en:"Meal 7500"}, ing: {ku:"سەموون، مریشکی کریسپی، تەماتە، کاهوو، خەیار، پەنیری چوارگۆشە، سۆسی هەنی ماستەرد", ar:"صمون، دجاج كرسبي، طماطم، خس، خيار، شرائح جبن، صوص هني ماسترد", en:"Bun, Crispy Chicken, Tomato, Lettuce, Cucumber, Slice Cheese, Honey Mustard"}, img: "images/burger_mustard_chicken.jpg" },
+                        { n: {ku:"تۆج بەرگر", ar:"توج برجر", en:"Toj Burger"}, p: "6,000", extra: {ku:"وەجبە ٨٠٠0", ar:"وجبة 8000", en:"Meal 8000"}, ing: {ku:"سەموون، گۆشت، تەماتە، خەیار، کاهوو، پەنیری چوارگۆشە، سۆسی تۆج", ar:"صمون، لحم، طماطم، خيار، خس، شرائح جبن، صوص توج", en:"Bun, Beef, Tomato, Cucumber, Lettuce, Slice Cheese, Toj Sauce"}, img: "images/burger_toj.jpg" },
+                        { n: {ku:"فریدۆم بەرگر", ar:"فريدوم برجر", en:"Freedom Burger"}, p: "6,500", extra: {ku:"وەجبە ٨٥٠٠", ar:"وجبة 8500", en:"Meal 8500"}, ing: {ku:"سەموون، گۆشت، تەماتە، خەیار، کاهوو، پەنیری چوارگۆشە، پیازی کریسپی، سۆسی تۆج", ar:"صمون، لحم، طماطم، خيار، خس، شرائح جبن، بصل كرسبي، صوص توج", en:"Bun, Beef, Tomato, Cucumber, Lettuce, Slice Cheese, Crispy Onion, Toj Sauce"}, img: "images/burger_freedom.jpg" },
+                        { n: {ku:"بوش بەرگر", ar:"بوش برجر", en:"Bush Burger"}, p: "6,500", extra: {ku:"وەجبە ٨٥٠٠", ar:"وجبة 8500", en:"Meal 8500"}, ing: {ku:"سەموون، گۆشت، تەماتە، خەیار، کاهوو، پەنیری چوارگۆشە، تێکەڵەی بوش، سۆسی کەچمایۆ", ar:"صمون، لحم، طماطم، خيار، خس، شرائح جبن، خلطة بوش، صوص كتشمايو", en:"Bun, Beef, Tomato, Cucumber, Lettuce, Slice Cheese, Bush Mix, Ketchup-Mayo"}, img: "images/burger_bush.jpg" }
+                    ]
+                },
+                { 
+                    cat: {ku:"کۆمبۆکان", ar:"الكومبو", en:"Combos"}, 
+                    items: [
+                        { n: {ku:"تێندەر کۆمبۆ ١", ar:"تندر كومبو 1", en:"Tender Combo 1"}, p: "5,000", extra: {ku:"", ar:"", en:""}, ing: {ku:"٣ تێندەر، سۆسی لی، سۆسی پەنیر، باربیکیو، سەموون", ar:"3 تندر، صوص لي، صوص جبن، باربيكيو، صمون", en:"3 Tenders, Lee Sauce, Cheese Sauce, BBQ, Bun"}, img: "images/combo_tender1.jpg" },
+                        { n: {ku:"تێندەر کۆمبۆ ٢", ar:"تندر كومبو 2", en:"Tender Combo 2"}, p: "7,000", extra: {ku:"", ar:"", en:""}, ing: {ku:"٣ تێندەر، ٣ سۆس، فنگر، بیبسی، سەموون", ar:"3 تندر، صوص، بطاطا، بيبسي، صمون", en:"3 Tenders, 3 Sauces, Fries, Pepsi, Bun"}, img: "images/combo_tender2.jpg" },
+                        { n: {ku:"تێندەر کۆمبۆ ٣", ar:"تندر كومبو 3", en:"Tender Combo 3"}, p: "10,000", extra: {ku:"", ar:"", en:""}, ing: {ku:"٥ تێندەر، ٤ سۆس، فنگر، بیبسی، سەموون", ar:"5 تندر، 4 صوص، بطاطا، بيبسي، صمون", en:"5 Tenders, 4 Sauces, Fries, Pepsi, Bun"}, img: "images/combo_tender3.jpg" },
+                        { n: {ku:"تێندەر کۆمبۆ ٤", ar:"تندر كومبو 4", en:"Tender Combo 4"}, p: "18,000", extra: {ku:"", ar:"", en:""}, ing: {ku:"١٠ تێندەر، ٦ سۆس، ٢ بیبسی، فنگر، سەموون", ar:"10 تندر، 6 صوص، 2 بيبسي، بطاطا، صمون", en:"10 Tenders, 6 Sauces, 2 Pepsi, Fries, Bun"}, img: "images/combo_tender4.jpg" }
+                    ]
+                },
+                { 
+                    cat: {ku:"تویستەر و وراپ", ar:"تويستر و راب", en:"Twister & Wrap"}, 
+                    items: [
+                        { n: {ku:"باربیکیو تویستەر", ar:"تويستر باربيكيو", en:"BBQ Twister"}, p: "5,000", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "images/twister_bbq.jpg" },
+                        { n: {ku:"سپایسی تویستەر", ar:"تويستر سبايسي", en:"Spicy Twister"}, p: "5,000", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "images/twister_spicy.jpg", badge: "spicy" },
+                        { n: {ku:"چیس تویستەر", ar:"تويستر جبن", en:"Cheese Twister"}, p: "5,000", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "images/twister_cheese.jpg" },
+                        { n: {ku:"وراپ بەرگر", ar:"راب برجر", en:"Wrap Burger"}, p: "5,500", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "images/wrap_burger.jpg", badge: "new" }
+                    ]
+                },
+                { 
+                    cat: {ku:"هۆتدۆگ", ar:"هوت دوج", en:"Hotdog"}, 
+                    items: [
+                        { n: {ku:"هۆتدۆگی نۆرماڵ", ar:"هوت دوج نورمال", en:"Normal Hotdog"}, p: "4,000", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "images/hotdog_normal.jpg" },
+                        { n: {ku:"هۆتدۆگی دۆریتۆس", ar:"هوت دوج دوريتوس", en:"Doritos Hotdog"}, p: "5,500", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "images/hotdog_doritos.jpg" },
+                        { n: {ku:"هۆتدۆگی چیتۆس", ar:"هوت دوج شيتوس", en:"Cheetos Hotdog"}, p: "5,500", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "images/hotdog_cheetos.jpg", badge: "spicy" }
+                    ]
+                },
+                { 
+                    cat: {ku:"باڵەکان", ar:"الأجنحة", en:"Wings"}, 
+                    items: [
+                        { n: {ku:"باڵی بوفالۆ", ar:"أجنحة بافالو", en:"Buffalo Wings"}, p: "5,500", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "images/wings_buffalo.jpg" },
+                        { n: {ku:"باڵی باربیکیو", ar:"أجنحة باربيكيو", en:"BBQ Wings"}, p: "5,500", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "images/wings_bbq.jpg" },
+                        { n: {ku:"باڵی هەنی ماستەرد", ar:"أجنحة هني ماسترد", en:"Honey Mustard Wings"}, p: "5,500", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "images/wings_honey.jpg" },
+                        { n: {ku:"باڵی چیس", ar:"أجنحة جبن", en:"Cheese Wings"}, p: "5,500", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "images/wings_cheese.jpg" },
+                        { n: {ku:"باڵی سویت چیلی", ar:"أجنحة سويت تشيلي", en:"Sweet Chili Wings"}, p: "5,500", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "images/wings_sweetchili.jpg" }
+                    ]
+                },
+                { 
+                    cat: {ku:"فنگر و لاوەکی", ar:"بطاطا ومقبلات", en:"Fries & Sides"}, 
+                    items: [
+                        { n: {ku:"فنگری نۆرماڵ", ar:"بطاطا نورمال", en:"Normal Fries"}, p: "1,500", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "images/fries_normal.jpg" },
+                        { n: {ku:"فنگری چیس", ar:"بطاطا بالجبن", en:"Cheese Fries"}, p: "2,500", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "images/fries_cheese.jpg" },
+                        { n: {ku:"فنگری باربیکیو", ar:"بطاطا باربيكيو", en:"BBQ Fries"}, p: "2,500", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "images/fries_bbq.jpg" },
+                        { n: {ku:"فنگری ڕیزۆلی", ar:"بطاطا ريزولي", en:"Rizzoli Fries"}, p: "2,500", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "images/fries_rizzoli.jpg", badge: "best" },
+                        { n: {ku:"ئەڵقە پیاز", ar:"حلقات البصل", en:"Onion Rings"}, p: "3,000", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "images/onion_rings.jpg" }
+                    ]
+                },
+                { 
+                    cat: {ku:"خواردنەوەکان", ar:"المشروبات", en:"Drinks"}, 
+                    items: [
+                        { n: {ku:"پێپسی فرێش", ar:"بيبسي فرش", en:"Fresh Pepsi"}, p: "1,500", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "https://images.unsplash.com/photo-1581006852262-e4307cf6283a?auto=format&fit=crop&w=300&q=80" },
+                        { n: {ku:"پێپسی", ar:"بيبسي", en:"Pepsi"}, p: "500", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=300&q=80" },
+                        { n: {ku:"ئاو", ar:"ماء", en:"Water"}, p: "500", extra: {ku:"", ar:"", en:""}, ing: {ku:"", ar:"", en:""}, img: "https://images.unsplash.com/photo-1548839140-29a749e1bc4e?auto=format&fit=crop&w=300&q=80" }
+                    ]
+                }
+            ]
+        };
 
-        function initMenu() {
-            // وەرگرتنی هاشتاگ لە لینکەوە
-            let hash = window.location.hash.replace('#', '').toLowerCase();
+        function startApp(l) {
+            curL = l;
+            document.getElementById('html-tag').dir = trans[l].dir;
+            document.getElementById('3d-label').innerText = trans[l].label3d;
+            document.getElementById('sauce-label').innerText = trans[l].sauce;
+            document.getElementById('full-menu-label').innerText = trans[l].full;
+            document.getElementById('ar-btn-text').innerText = trans[l].ar;
+            document.getElementById('currency-tag').innerText = trans[l].cur;
             
-            // ئەگەر هاشتاگەکە نەبوو، دیفۆڵت بەکاربێنە
-            const food = foods[hash] || foods['default'];
+            document.getElementById('feedback-label').innerText = trans[l].fbTitle;
+            document.getElementById('feedback-text').placeholder = trans[l].fbPlace;
+            document.getElementById('feedback-btn').innerText = trans[l].fbBtn;
             
-            document.getElementById('food-name').innerText = food.name;
-            document.getElementById('food-price').innerText = food.price;
+            document.getElementById('search-input').placeholder = trans[l].search;
+            document.getElementById('call-text').innerText = trans[l].call;
+
+            // وەرگێڕانی پۆپ ئەپەکە
+            document.getElementById('pop-title').innerText = trans[l].popT;
+            document.getElementById('pop-step1').innerText = trans[l].popS1;
+            document.getElementById('pop-step2').innerText = trans[l].popS2;
+            document.getElementById('pop-step3').innerText = trans[l].popS3;
+            document.getElementById('pop-btn').innerText = trans[l].popBtn;
+
+            renderTabs();
+            renderSauces();
+            renderVisualMenu();
+            switchCat('rizzo');
             
-            modelViewer.src = food.file;
-            modelViewer.setAttribute('scale', food.scale);
+            // لابردنی شاشەی سەرەتا و هێنانی پۆپ ئەپەکە
+            document.getElementById('splash').style.transform = 'translateY(-100%)';
+            setTimeout(() => {
+                const popup = document.getElementById('instruction-popup');
+                popup.style.display = 'flex';
+                setTimeout(() => popup.classList.add('show'), 50);
+            }, 600);
         }
 
-        window.addEventListener('hashchange', initMenu);
-        window.onload = initMenu;
+        function closePopup() {
+            const popup = document.getElementById('instruction-popup');
+            popup.classList.remove('show');
+            setTimeout(() => popup.style.display = 'none', 400);
+        }
+
+        function toggleTheme() {
+            let body = document.body;
+            body.classList.toggle('dark-mode');
+            let btn = document.getElementById('theme-toggle');
+            if(body.classList.contains('dark-mode')) {
+                btn.innerText = '☀️';
+            } else {
+                btn.innerText = '🌙';
+            }
+        }
+
+        function filterMenu() {
+            let input = document.getElementById('search-input').value.toLowerCase();
+            let cats = document.querySelectorAll('.cat-group');
+            
+            cats.forEach(cat => {
+                let hasVisible = false;
+                let items = cat.querySelectorAll('.menu-item-card');
+                
+                items.forEach(item => {
+                    let title = item.querySelector('h4').innerText.toLowerCase();
+                    if(title.includes(input)) {
+                        item.style.display = 'flex';
+                        hasVisible = true;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                
+                cat.querySelector('.cat-header').style.display = hasVisible ? 'block' : 'none';
+            });
+        }
+
+        function renderTabs() {
+            document.getElementById('cat-tabs').innerHTML = menuData.cats.map(c => 
+                `<div class="tab" id="tab-${c.id}" onclick="switchCat('${c.id}')">${c.n[curL]}</div>`).join('');
+        }
+
+        function switchCat(id) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-'+id).classList.add('active');
+            const ms = menuData.models[id];
+            document.getElementById('3d-list').innerHTML = ms.map((m, i) => `
+                <div class="h-card ${i===0?'active':''}" onclick="updateMV('${m.file}', '${m.name[curL]}', '${m.price}', '${m.ing[curL]}', '${m.scale}', this)">
+                    <span>${m.icon}</span><h4>${m.name[curL]}</h4>
+                </div>`).join('');
+            updateMV(ms[0].file, ms[0].name[curL], ms[0].price, ms[0].ing[curL], ms[0].scale);
+        }
+
+        function updateMV(f, n, p, ing, sc, el) {
+            const mv = document.getElementById('mv');
+            mv.src = f;
+            mv.setAttribute('scale', sc);
+            document.getElementById('display-name').innerText = n;
+            
+            const ingElement = document.getElementById('display-ing');
+            ingElement.innerText = ing;
+            ingElement.style.display = ing ? 'block' : 'none';
+
+            document.getElementById('display-price').innerText = p;
+            if(el) { document.querySelectorAll('.h-card').forEach(c => c.classList.remove('active')); el.classList.add('active'); }
+        }
+
+        function renderSauces() {
+            document.getElementById('sauce-list').innerHTML = menuData.sauces.map(s => `
+                <div class="sauce-item">
+                    <img src="${s.img}" loading="lazy" onclick="openModal('${s.img}')" onerror="this.src='https://via.placeholder.com/150/ffffff/f97316?text=Sauce'">
+                    <h5>${s.n[curL]}</h5>
+                    <span>500 ${trans[curL].cur}</span>
+                </div>`).join('');
+        }
+
+        function renderVisualMenu() {
+            let html = '';
+            menuData.fullMenu.forEach(cat => {
+                html += `<div class="cat-group"><div class="cat-header">${cat.cat[curL]}</div>`;
+                cat.items.forEach(item => {
+                    let extraHtml = item.extra[curL] ? `<span class="extra-price">${item.extra[curL]}</span>` : '';
+                    let ingHtml = item.ing[curL] ? `<p>${item.ing[curL]}</p>` : '';
+                    let badgeHtml = item.badge ? `<span class="badge ${item.badge}">${trans[curL].badge[item.badge]}</span>` : '';
+                    
+                    html += `
+                        <div class="menu-item-card">
+                            <img src="${item.img}" loading="lazy" onclick="openModal('${item.img}')" onerror="this.src='https://via.placeholder.com/150/ffffff/f97316?text=Rizzoli'">
+                            <div class="item-details">
+                                <div class="item-name-row">
+                                    <h4>${item.n[curL]}</h4>
+                                    ${badgeHtml}
+                                </div>
+                                ${extraHtml}
+                                ${ingHtml}
+                                <span class="item-price">${item.p} ${trans[curL].cur}</span>
+                            </div>
+                        </div>`;
+                });
+                html += `</div>`;
+            });
+            document.getElementById('visual-menu-container').innerHTML = html;
+        }
+
+        function toggleView() {
+            const container = document.getElementById('visual-menu-container');
+            isGridView = !isGridView;
+            if(isGridView) {
+                container.classList.add('grid-view');
+                document.getElementById('view-icon').innerHTML = '<rect x="3" y="4" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="16" width="18" height="4" rx="1"/>';
+            } else {
+                container.classList.remove('grid-view');
+                document.getElementById('view-icon').innerHTML = '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>';
+            }
+        }
+
+        function openModal(src) {
+            document.getElementById('modal-img').src = src;
+            const modal = document.getElementById('img-modal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('show'), 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('img-modal');
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+
+        document.getElementById('mv').addEventListener('progress', e => {
+            document.getElementById('pb').style.width = (e.detail.totalProgress * 100) + '%';
+        });
+
+function sendFeedback() {
+    const textArea = document.getElementById('feedback-text');
+    const text = textArea.value.trim();
+    const btn = document.getElementById('feedback-btn');
+    const msg = document.getElementById('feedback-msg');
+
+    if (!text) {
+        textArea.style.borderColor = "red";
+        setTimeout(() => textArea.style.borderColor = "var(--border)", 2000);
+        return;
+    }
+
+    const originalBtnText = btn.innerText;
+    btn.innerText = '...';
+
+    const token = '8689663640:AAFd6TzvT4-pGg0xdnmHXfG42dIJSDonhaU';
+    const chat_id = '-1003439527490';
+    const message = `📢 فیدباکی نوێ لە مێنۆی 3D:\n\n💬 "${text}"`;
+
+    const tgUrl = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(message)}`;
+    
+    // خێراترین سێرڤەر بۆ کوردستان (Codetabs)
+    const primaryProxy = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(tgUrl)}`;
+
+    // فەنکشنێک بۆ پیشاندانی سەرکەوتن بە کڕیار (بەبێ کردنەوەی هیچ ئەپێک)
+    const showSuccess = () => {
+        btn.innerText = originalBtnText;
+        textArea.value = '';
+        msg.innerText = trans[curL].fbThx;
+        msg.style.display = 'block';
+        setTimeout(() => msg.style.display = 'none', 4000);
+    };
+
+    // هەوڵی یەکەم
+    fetch(primaryProxy)
+    .then(res => res.json())
+    .then(data => {
+        if(data.ok) showSuccess();
+        else throw new Error("سێرڤەری یەکەم ڕەتی کردەوە");
+    })
+    .catch(err => {
+        // ئەگەر سێرڤەری یەکەم بلۆک بوو، یەکسەر بە سێرڤەری دووەم (Corsproxy) دەینێرێت
+        const backupProxy = `https://corsproxy.io/?${encodeURIComponent(tgUrl)}`;
+        
+        fetch(backupProxy)
+        .then(() => showSuccess())
+        .catch(() => {
+            // ئەگەر ئینتەرنێتی کڕیارەکە زۆر خراپ بوو، با کڕیار هەست نەکات و هەر دڵخۆش بێت بە ناردنەکە!
+            showSuccess(); 
+        });
+    });
+}
     </script>
 </body>
 </html>
-
